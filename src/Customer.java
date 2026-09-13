@@ -20,7 +20,9 @@ public class Customer extends Person {
 	
 	@Override
 	public void displayInfo() {
-		// pass
+		System.out.println("Khách hàng: " + getName() + " (ID: " + getID() + ")");
+		System.out.println("Số điện thoại: " + getPhoneNumber());
+		System.out.println("Loại thành viên: " + getMemberType() + " | " + "Điểm thành viên: " + getLoyaltyPoints());
 	}
 	
 	// setter

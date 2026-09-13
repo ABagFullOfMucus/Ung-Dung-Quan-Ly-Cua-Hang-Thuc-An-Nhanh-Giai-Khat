@@ -22,7 +22,6 @@ public abstract class Product implements IStorable {
 	
 	public abstract void displayInfo();
 	
-	
 	// setter 
 	
 	public void setProductID(String productID) {

@@ -17,18 +17,27 @@ public class FastFood extends Product {
 	
 	@Override
 	public void displayInfo() {
-		// pass
+		System.out.println("Tên sản phẩm: " + getProductName() + " (ID: " + getProductID() + ")");
+		System.out.println("Giá: " + getPrice() + " | Số lượng hàng còn lại trong kho: " + getStock());
+		System.out.println("Lượng calo: " + getCalories());
+		System.out.println("Hạn sử dụng (giờ): " + getShelfLifeHours());
 	}
 	
 	@Override
 	public String toFileString() {
-		// pass
-		return "";
+		return "FastFood," + getProductName() + "," + getProductID() + "," + getPrice() + "," + getStock() + "," + getCalories() + "," + getShelfLifeHours();
 	}
 	
 	@Override
 	public void fromFileString(String line) {
-		// pass
+		String[] st = line.split(",");
+		
+		setProductName(st[0]);
+		setProductID(st[1]);
+		setPrice(Double.parseDouble(st[2]));
+		setStock(Integer.parseInt(st[3]));
+		this.calories = Double.parseDouble(st[4]);
+		this.shelfLifeHours = Double.parseDouble(st[5]);
 	}
 	
 	// setter

@@ -1,4 +1,4 @@
-public class Store {
+public class Store implements IStorable {
 	private String storeName;
 	private String address;
 	private String phoneNumber;
@@ -13,6 +13,19 @@ public class Store {
 		this.address = address;
 		this.phoneNumber = phoneNumber;
 	}
+	
+	@Override
+    public String toFileString() {
+        return storeName + "," + address + "," + phoneNumber;
+    }
+
+    @Override
+    public void fromFileString(String line) {
+        String[] st = line.split(",");
+        this.storeName = st[0];
+        this.address = st[1];
+        this.phoneNumber = st[2];
+    }
 	
 	// setter
 	public void setStoreName(String storeName) {

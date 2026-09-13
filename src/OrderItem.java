@@ -1,4 +1,4 @@
-public class OrderItem {
+public class OrderItem implements IStorable {
 	private Product product;
 	
 	private int quantity;
@@ -14,6 +14,23 @@ public class OrderItem {
 	public double getSubtotal() {
 		return this.product.getPrice() * this.quantity;
 	}
+	
+	public void displayItem() {
+        System.out.println(product.getProductName() + " x " + quantity + " = VNĐ" + getSubtotal());
+    }
+	
+	@Override
+    public String toFileString() {
+        return product.getProductID() + ":" + quantity;
+    }
+    
+    @Override
+    public void fromFileString(String line) {
+		String[] st = line.split(",");
+		
+		String productID = st[0];
+		this.quantity = Integer.parseInt(st[1]);
+    }
 	
 	
 	// setter

@@ -18,7 +18,10 @@ public class Employee extends Person {
 	
 	@Override
 	public void displayInfo() {
-		// pass
+		System.out.println("Tên nhân viên: " + getName() + " (ID: " + getID() + ")");
+		System.out.println("Số điện thoại: " + getPhoneNumber());
+		System.out.println("Chức vụ: " + getRole());
+		System.out.println("Lương: " + getSalary());
 	}
 	
 	
