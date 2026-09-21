@@ -1,10 +1,15 @@
-public class CustomerList {
+package service;
+
+import model.Customer;
+import utils.FileHandler;
+
+public class CustomerManager {
 	private Customer[] customers;
 	
 	private int count;
 	
 	// constructor
-	public CustomerList() {
+	public CustomerManager() {
 		this.customers = new Customer[1];
 		this.count = 0;
 	}
@@ -20,11 +25,16 @@ public class CustomerList {
 		customers = tmp;
 	}
 	
-	public void addCustomer(Customer c) {
+	public boolean addCustomer(Customer c) {
+		if (findCustomer(c.getID()) != null) {
+			return false;
+		}
+		
 		if (count >= customers.length) resize();
 		
 		customers[count] = c;
 		count += 1;
+		return true;
 	}
 	
 	public Customer findCustomer(String id) {
@@ -35,7 +45,7 @@ public class CustomerList {
 		}
 		return null;
 	}
-
+	
 	public boolean removeCustomer(String id) {
 		int f = -1;
 		for (int i = 0; i < count; i++) {
@@ -58,13 +68,35 @@ public class CustomerList {
 		return true;
 	}
 	
-	// setters
-	public void setCustomers(Customer[] customers) {
-		this.customers = customers;
+	public void displayAllCustomers() {
+		if (count == 0) {
+			System.out.println("Danh sách trống!");
+			return;
+		}
+		
+		System.out.println("Danh sách khách hàng: ");
+		for (int i = 0; i < count; i++) {
+			customers[i].displayInfo();
+		}
 	}
 	
-	public void setCount(int count) {
-		this.count = count;
+	// Lưu / đọc file
+	public void saveToFile(String fileName) {
+		FileHandler.saveToFile(fileName, customers, count);
+	}
+	
+	public void loadFromFile(String fileName) {
+		String[] lines = FileHandler.readLines(fileName);
+		
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			
+			if (!line.startsWith("CUSTOMER")) continue;
+			
+			Customer c = new Customer();
+			c.fromFileString(line);
+			addCustomer(c);
+		}
 	}
 	
 	// getters 

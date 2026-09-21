@@ -1,4 +1,8 @@
-public abstract class Person {
+package model;
+
+import interfaces.IStorable;
+
+public abstract class Person implements IStorable {
 	protected String id;
 	protected String name;
 	protected String phoneNumber;

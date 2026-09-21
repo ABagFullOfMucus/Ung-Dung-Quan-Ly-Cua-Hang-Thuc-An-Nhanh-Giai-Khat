@@ -1,3 +1,5 @@
+package model;
+
 public class Customer extends Person {
 	private String memberType;
 	
@@ -23,6 +25,23 @@ public class Customer extends Person {
 		System.out.println("Khách hàng: " + getName() + " (ID: " + getID() + ")");
 		System.out.println("Số điện thoại: " + getPhoneNumber());
 		System.out.println("Loại thành viên: " + getMemberType() + " | " + "Điểm thành viên: " + getLoyaltyPoints());
+	}
+	
+	@Override
+	public String toFileString() {
+		// Định dạng: CUSTOMER,<id>,<name>,<phoneNumber>,<memberType>,<loyaltyPoints>
+		return "CUSTOMER," + getID() + "," + getName() + "," + getPhoneNumber() + "," + getMemberType() + "," + getLoyaltyPoints();
+	}
+	
+	@Override
+	public void fromFileString(String line) {
+		String[] st = line.split(",");
+		
+		setID(st[1]);
+		setName(st[2]);
+		setPhoneNumber(st[3]);
+		this.memberType = st[4];
+		this.loyaltyPoints = Integer.parseInt(st[5]);
 	}
 	
 	// setter

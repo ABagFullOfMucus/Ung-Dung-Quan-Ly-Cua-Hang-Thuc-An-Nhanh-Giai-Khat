@@ -1,4 +1,12 @@
-public class Order implements IStorable {
+package model;
+
+import interfaces.IPayable;
+import interfaces.IStorable;
+import service.CustomerManager;
+import service.EmployeeManager;
+import service.MenuManager;
+
+public class Order implements IStorable, IPayable {
 	private String orderID;
 	
 	private Employee cashier;
@@ -11,6 +19,11 @@ public class Order implements IStorable {
 	
 	
 	// constructor
+	public Order() {
+		this.items = new OrderItem[1];
+		this.count = 0;
+	}
+	
 	public Order(String orderID, Employee cashier, Customer customer) {
 		this.orderID = orderID;
 		this.cashier = cashier;
@@ -39,6 +52,7 @@ public class Order implements IStorable {
 		count += 1;
 	}
 	
+	@Override
 	public double calculateTotal() {
 		double tong = 0;
 		
@@ -49,10 +63,10 @@ public class Order implements IStorable {
 		return tong;
 	}
 	
-	public boolean removeItem(String productID) {
+	public boolean removeItem(String itemID) {
 		int f = -1;
 		for (int i = 0; i < count; i++) {
-			if (items[i].getProduct().getProductID().equals(productID)) {
+			if (items[i].getItem().getItemID().equals(itemID)) {
 				f = i;
 				break;
 			}
@@ -69,9 +83,9 @@ public class Order implements IStorable {
 		return true;
 	}
 	
-	public OrderItem findItem(String productID) {
+	public OrderItem findItem(String itemID) {
 		for (int i = 0; i < count; i++) {
-			if (items[i].getProduct().getProductID().equals(productID)) {
+			if (items[i].getItem().getItemID().equals(itemID)) {
 				return items[i];
 			}
 		}
@@ -81,21 +95,28 @@ public class Order implements IStorable {
 	public void displayOrder() {
 		if (count == 0) {
 			System.out.println("Danh sách trống!");
+			return;
 		}
 		
-		System.out.println("===== Danh sách Order =====");
+		System.out.println("===== Order " + orderID + " =====");
+		System.out.println("Thu ngân: " + (cashier != null ? cashier.getName() : "N/A")
+			+ " | Khách hàng: " + (customer != null ? customer.getName() : "Khách vãng lai"));
+		
 		for (int i = 0; i < count; i++) {
-			items[1].displayItem();
+			items[i].displayItem();
 		}
+		
+		System.out.println("Tổng tiền: " + calculateTotal() + "VND");
 	}
 	
 	@Override
 	public String toFileString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("ORDER,").append(orderID).append(",").append(cashier != null ? cashier.getID() : "NULL").append(",").append(customer != null ? customer.getID() : "NULL");
+		// Định dạng: ORDER,<orderID>,<cashierID|NULL>,<customerID|NULL>,<itemID:quantity>,...
+		StringBuilder sb = new StringBuilder("ORDER,");
+		sb.append(orderID).append(",").append(cashier != null ? cashier.getID() : "NULL").append(",").append(customer != null ? customer.getID() : "NULL");
 		
 		for (int i = 0; i < count; i++) {
-			sb.append(",").append(items[i].getProduct().getProductID()).append(":").append(items[i].getQuantity());
+			sb.append(",").append(items[i].toFileString());
 		}
 		
 		return sb.toString();
@@ -103,36 +124,40 @@ public class Order implements IStorable {
 	
 	@Override
 	public void fromFileString(String line) {
+		// Đọc thô: chỉ nạp mã order và số lượng, chưa ánh xạ tham chiếu
 		String[] st = line.split(",");
-		this.orderID = st[0];
+		this.orderID = st[1];
+		this.cashier = null;
+		this.customer = null;
 		this.items = new OrderItem[1];
 		this.count = 0;
 		
-		for (int i = 3; i < st.length; i++) {
-			String[] itemParts = st[i].split(":");
-			OrderItem item = new OrderItem(null, Integer.parseInt(itemParts[1]));
+		for (int i = 4; i < st.length; i++) {
+			OrderItem item = new OrderItem(null, 0);
+			item.fromFileString(st[i]);
 			addItem(item);
 		}
 	}
 	
-	public void fromFileString(String line, ProductList productList, EmployeeList employeeList, CustomerList customerList) {
+	// Đọc file kèm danh sách để ánh xạ lại tham chiếu
+	public void fromFileString(String line, MenuManager menuManager, EmployeeManager employeeManager, CustomerManager customerManager) {
 		String[] st = line.split(",");
 		
-		this.orderID = st[0];
-		this.cashier = employeeList.findEmployee(st[1]);
-		this.customer = customerList.findCustomer(st[2]);
+		this.orderID = st[1];
+		this.cashier = "NULL".equals(st[2]) ? null : employeeManager.findEmployee(st[2]);
+		this.customer = "NULL".equals(st[3]) ? null : customerManager.findCustomer(st[3]);
 		
 		this.items = new OrderItem[1];
 		this.count = 0;
 		
-		for (int i = 3; i < st.length; i++) {
-			String[] orderItemParts = st[i].split(":");
-			String productID = orderItemParts[0]; 
-			int quantity = Integer.parseInt(orderItemParts[1]);
+		for (int i = 4; i < st.length; i++) {
+			String[] itemParts = st[i].split(":");
+			String itemID = itemParts[0];
+			int quantity = Integer.parseInt(itemParts[1]);
 			
-			Product product = productList.findProduct(productID);
+			MenuItem item = menuManager.findItem(itemID);
 			
-			OrderItem newItem = new OrderItem(product, quantity);
+			OrderItem newItem = new OrderItem(item, quantity);
 			addItem(newItem); 
 		}
 	}

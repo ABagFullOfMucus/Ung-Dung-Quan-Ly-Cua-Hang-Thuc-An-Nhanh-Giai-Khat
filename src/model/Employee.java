@@ -1,3 +1,5 @@
+package model;
+
 public class Employee extends Person {
 	private String role;
 	
@@ -22,6 +24,23 @@ public class Employee extends Person {
 		System.out.println("Số điện thoại: " + getPhoneNumber());
 		System.out.println("Chức vụ: " + getRole());
 		System.out.println("Lương: " + getSalary());
+	}
+	
+	@Override
+	public String toFileString() {
+		// Định dạng: EMPLOYEE,<id>,<name>,<phoneNumber>,<role>,<salary>
+		return "EMPLOYEE," + getID() + "," + getName() + "," + getPhoneNumber() + "," + getRole() + "," + getSalary();
+	}
+	
+	@Override
+	public void fromFileString(String line) {
+		String[] st = line.split(",");
+		
+		setID(st[1]);
+		setName(st[2]);
+		setPhoneNumber(st[3]);
+		this.role = st[4];
+		this.salary = Double.parseDouble(st[5]);
 	}
 	
 	

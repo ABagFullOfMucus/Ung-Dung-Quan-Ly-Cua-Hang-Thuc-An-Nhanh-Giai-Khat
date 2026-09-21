@@ -1,0 +1,11 @@
+# Build artifacts
+out/
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Runtime data
+data/
