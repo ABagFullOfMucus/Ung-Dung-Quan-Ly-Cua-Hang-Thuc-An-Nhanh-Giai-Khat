@@ -2,36 +2,58 @@
 
 | Thanh Vien | Lop / Interface Phu Trach | Vai Tro & Trach Nhiem |
 | :--- | :--- | :--- |
-| **Nguyen Minh Tuan** | `IStorable`, `Product`, `FastFood` | Base interface, lop co so san pham va lop con Thuc an nhanh. |
-| **Hoang Phuc** | `Beverage`, `ProductList`, `Store` | Lop con Do uong, quan ly mang `Product[]` va thong tin cua hang. |
-| **Nguyen Gia Bao** | `Person`, `Employee`, `Customer` | Lop co so con nguoi, lop con Nhan vien va Khach hang. |
-| **Nguyen Huu Dang Qui** | `EmployeeList`, `OrderItem`, `Order` | Quan ly mang `Employee[]`, chi tiet don hang va lop Don hang. |
-| **Lam Phoi Phoi** | `OrderList`, `Receipt`, `MainApp` | Quan ly mang `Order[]`, in hoa don va giao dien Menu Console. |
+| **Nguyen Minh Tuan** |  |
+| **Hoang Phuc** |  | 
+| **Nguyen Gia Bao** |  | 
+| **Nguyen Huu Dang Qui** |  | 
+| **Lam Phoi Phoi** |  | 
 
 ---
 
-## Cau Truc Du An 
+## Cach Bien Dich & Chay (Geany / VS Code)
+
+Chay tu thu muc chua thu muc `src/`:
+
+```bash
+# Cach 1 - bien dich ngay trong src/ (Geany compile current file)
+cd src
+javac -encoding UTF-8 Main.java
+java -Dfile.encoding=UTF-8 Main
+
+# Cach 2 - bien dich ra thu muc out/ tu goc du an
+javac -encoding UTF-8 -sourcepath src -d out src/Main.java
+java -Dfile.encoding=UTF-8 -cp out Main
+```
+
+> Luu y: file du lieu se duoc ghi vao thu muc `data/` theo thu muc ma ban chay lenh.
+
+---
+
+## Cau Truc Du An
 
 ```text
-Ung-Dung-Quan-Ly-Cua-Hang-Thuc-An-Nhanh-Giai-Khat/
-├── data/
-│   ├── products.txt
-│   ├── employees.txt
-│   └── orders.txt
+OOP_T2/
 └── src/
-    ├── IStorable.java
-    ├── Product.java
-    ├── FastFood.java
-    ├── Beverage.java
-    ├── Person.java
-    ├── Employee.java
-    ├── Customer.java
-    ├── OrderItem.java
-    ├── Order.java
-    ├── Receipt.java
-    ├── Store.java
-    ├── ProductList.java
-    ├── OrderList.java
-    ├── EmployeeList.java
-    └── MainApp.java
-# Ung-Dung-Quan-Ly-Cua-Hang-Thuc-An-Nhanh-Giai-Khat
+    ├── interfaces/
+    │   ├── IDiscountable.java
+    │   ├── IPayable.java
+    │   └── IStorable.java
+    ├── model/
+    │   ├── Admin.java
+    │   ├── Customer.java
+    │   ├── Drink.java
+    │   ├── Employee.java
+    │   ├── FastFood.java
+    │   ├── MenuItem.java
+    │   ├── Order.java
+    │   ├── OrderItem.java
+    │   └── Person.java
+    ├── service/
+    │   ├── CustomerManager.java
+    │   ├── EmployeeManager.java
+    │   ├── MenuManager.java
+    │   └── OrderManager.java
+    ├── utils/
+    │   ├── FileHandler.java
+    │   └── InputValidator.java
+    └── Main.java
