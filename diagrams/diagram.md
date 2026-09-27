@@ -1,91 +1,91 @@
 MenuItem implements IStorable, IDiscountable {
-	private String itemID
-	private String itemName
-	private double price
-	private int stock
-	private double discountRate
+	- String itemID
+	- String itemName
+	- double price
+	- int stock
+	- double discountRate
 	
-	public abstract void displayInfo()
-	public double getDiscountedPrice()
+	+ abstract void displayInfo()
+	+ double getDiscountedPrice()
 }
 
 Drink extends MenuItem {
-	private String size
-	private boolean isIced
+	- String size
+	- boolean isIced
 }
 
 FastFood extends MenuItem {
-	public double calories
-	public double shelfLifeHours
+	- double calories
+	- double shelfLifeHours
 }
 
 MenuManager {
-	private MenuItem[] items
-	private int count
+	- MenuItem[] items
+	- int count
 	
-	public boolean addItem(MenuItem item)
-	public MenuItem findItem(String id)
-	public boolean removeItem(String id)
-	public void displayAllItems()
-	public MenuItem findMostExpensiveItem()
-	public void saveToFile(String fileName)
-	public void loadFromFile(String fileName)
-	private void resize()
+	+ boolean addItem(MenuItem item)
+	+ MenuItem findItem(String id)
+	+ boolean removeItem(String id)
+	+ void displayAllItems()
+	+ MenuItem findMostExpensiveItem()
+	+ void saveToFile(String fileName)
+	+ void loadFromFile(String fileName)
+	- void resize()
 }
 
 Person implements IStorable {
-	protected String id
-	protected String name
-	protected String phoneNumber
+	# String id
+	# String name
+	# String phoneNumber
 	
-	public abstract void displayInfo()
+	+ abstract void displayInfo()
 }
 
 Customer extends Person {
-	private String memberType
-	private int loyaltyPoints
+	- String memberType
+	- int loyaltyPoints
 	
-	public void addPoints(int points)
+	+ void addPoints(int points)
 }
 
 Employee extends Person {
-	private String role
-	private double salary
+	- String role
+	- double salary
 }
 
 Admin extends Employee {
-	private String username
-	private String password
+	- String username
+	- String password
 	
-	public boolean login(String username, String password)
+	+ boolean login(String username, String password)
 }
 
 CustomerManager {
-	private Customer[] customers
-	private int count
+	- Customer[] customers
+	- int count
 	
-	public boolean addCustomer(Customer c)
-	public Customer findCustomer(String id)
-	public boolean removeCustomer(String id)
-	public void displayAllCustomers()
-	public void saveToFile(String fileName)
-	public void loadFromFile(String fileName)
-	private void resize()
+	+ boolean addCustomer(Customer c)
+	+ Customer findCustomer(String id)
+	+ boolean removeCustomer(String id)
+	+ void displayAllCustomers()
+	+ void saveToFile(String fileName)
+	+ void loadFromFile(String fileName)
+	- void resize()
 }
 
 EmployeeManager {
-	private Employee[] employees
-	private int count
+	- Employee[] employees
+	- int count
 	
-	public boolean addEmployee(Employee e)
-	public Employee findEmployee(String id)
-	public boolean removeEmployee(String id)
-	public void displayAllEmployees()
-	public void findHighestPaidEmployee()
-	public void searchByRole(String role)
-	public void saveToFile(String fileName)
-	public void loadFromFile(String fileName)
-	private void resize()
+	+ boolean addEmployee(Employee e)
+	+ Employee findEmployee(String id)
+	+ boolean removeEmployee(String id)
+	+ void displayAllEmployees()
+	+ void findHighestPaidEmployee()
+	+ void searchByRole(String role)
+	+ void saveToFile(String fileName)
+	+ void loadFromFile(String fileName)
+	- void resize()
 }
 
 IStorable {
@@ -104,57 +104,57 @@ IPayable {
 }
 
 Order implements IStorable, IPayable {
-	private String orderID
-	private Employee cashier
-	private Customer customer
-	private OrderItem[] items
-	private int count
+	- String orderID
+	- Employee cashier
+	- Customer customer
+	- OrderItem[] items
+	- int count
 	
-	public void addItem(OrderItem item)
-	public double calculateTotal()
-	public boolean removeItem(String itemID)
-	public OrderItem findItem(String itemID)
-	public void displayOrder()
+	+ void addItem(OrderItem item)
+	+ double calculateTotal()
+	+ boolean removeItem(String itemID)
+	+ OrderItem findItem(String itemID)
+	+ void displayOrder()
 }
 
 OrderItem implements IStorable {
-	private MenuItem item
-	private int quantity
+	- MenuItem item
+	- int quantity
 	
-	public double getSubtotal()
-	public void displayItem()
+	+ double getSubtotal()
+	+ void displayItem()
 }
 
 OrderManager {
-	private Order[] orders
-	private int count
-	private String storeName
-	private String storeAddress
-	private String storePhoneNumber
+	- Order[] orders
+	- int count
+	- String storeName
+	- String storeAddress
+	- String storePhoneNumber
 	
-	public boolean addOrder(Order order)
-	public Order findOrder(String orderID)
-	public boolean removeOrder(String orderID)
-	public void displayAllOrders()
-	public void calculateTotalRevenue()
-	public void findHighestOrderValue()
-	public void printReceipt(Order order)
-	public void saveToFile(String fileName)
-	public void loadFromFile(String fileName, ...)
-	private void resize()
+	+ boolean addOrder(Order order)
+	+ Order findOrder(String orderID)
+	+ boolean removeOrder(String orderID)
+	+ void displayAllOrders()
+	+ void calculateTotalRevenue()
+	+ void findHighestOrderValue()
+	+ void printReceipt(Order order)
+	+ void saveToFile(String fileName)
+	+ void loadFromFile(String fileName, ...)
+	- void resize()
 }
 
 FileHandler {
-	public static boolean saveToFile(String fileName, IStorable[] items, int count)
-	public static int countLines(String fileName)
-	public static String[] readLines(String fileName)
+	+ static boolean saveToFile(String fileName, IStorable[] items, int count)
+	+ static int countLines(String fileName)
+	+ static String[] readLines(String fileName)
 }
 
 InputValidator {
-	public static int getInt(Scanner sc, String prompt)
-	public static double getDouble(Scanner sc, String prompt)
-	public static String getNonEmptyString(Scanner sc, String prompt)
-	public static boolean getBoolean(Scanner sc, String prompt)
+	+ static int getInt(Scanner sc, String prompt)
+	+ static double getDouble(Scanner sc, String prompt)
+	+ static String getNonEmptyString(Scanner sc, String prompt)
+	+ static boolean getBoolean(Scanner sc, String prompt)
 }
 
 

@@ -1,5 +1,3 @@
-## Cau Truc Du An
-
 ```text
 OOP_T2/
 └── src/

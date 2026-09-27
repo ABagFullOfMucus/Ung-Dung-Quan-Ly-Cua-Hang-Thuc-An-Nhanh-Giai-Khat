@@ -11,7 +11,7 @@ public class OrderManager {
 	
 	private int count;
 	
-	// Thông tin cửa hàng (gộp từ lớp Store cũ)
+	// Thông tin cửa hàng 
 	private String storeName;
 	
 	private String storeAddress;
