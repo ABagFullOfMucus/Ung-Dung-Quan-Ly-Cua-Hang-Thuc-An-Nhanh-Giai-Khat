@@ -1,0 +1,9 @@
+FastFood,FF01,Burger Bo Pho Mai,45000.0,120,620.0,24.0,0.0
+FastFood,FF02,Ga Cuon,38000.0,150,410.0,12.0,0.1
+FastFood,FF03,Combo Giam,55000.0,80,850.0,20.0,0.0
+FastFood,FF04,Ga Ky,32000.0,200,380.0,10.0,0.0
+Drink,D01,Cafe Den,22000.0,300,M,true,0.0
+Drink,D02,Cafe Sua Da,28000.0,280,L,true,0.0
+Drink,D03,Tra Vien,20000.0,250,M,true,0.0
+Drink,D04,Tra Dai,25000.0,260,L,true,0.15
+Drink,D05,Trà Chanh,18000.0,240,L,true,0.0
