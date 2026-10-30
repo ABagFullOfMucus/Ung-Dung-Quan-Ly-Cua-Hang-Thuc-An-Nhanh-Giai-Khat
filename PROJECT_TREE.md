@@ -1,12 +1,16 @@
-﻿# Project Tree
+# Project Tree
 
 ```text
-Ung-Dung-Quan-Ly-Cua-Hang-Thuc-An-Nhanh-Giai-Khat-branch-back-up/
+Ung-Dung-Quan-Ly-Cua-Hang-Thuc-An-Nhanh-Giai-Khat/
 ├── README.md
 ├── PROJECT_TREE.md
+├── Quy_uoc_Lien_ket_Method_OOP_Day_Du.docx
+├── Quy_uoc_Lien_ket_Method_OOP_v5.docx
 ├── store_management_class_diagram.pdf
 ├── store_management_class_diagrams.pdf
 ├── store_management_v5_no_exception.puml
+├── diagrams/
+│   └── class_diagram.md
 └── src/
     ├── Main.java
     ├── application/
@@ -16,64 +20,76 @@ Ung-Dung-Quan-Ly-Cua-Hang-Thuc-An-Nhanh-Giai-Khat-branch-back-up/
     ├── common/
     │   └── Result.java
     ├── interfaces/
+    │   ├── DiscountPolicy.java
     │   ├── IDiscountable.java
     │   ├── IPayable.java
     │   ├── IStatusable.java
     │   ├── IStorable.java
     │   ├── Repository.java
-    │   ├── TextConverter.java
-    │   └── DiscountPolicy.java
+    │   └── TextConverter.java
     ├── model/
-    │   ├── BaseEntity.java
-    │   ├── Party.java
-    │   ├── Person.java
-    │   ├── Supplier.java
-    │   ├── Customer.java
-    │   ├── Employee.java
-    │   ├── FullTimeEmployee.java
-    │   ├── PartTimeEmployee.java
     │   ├── Account.java
-    │   ├── MemberTier.java
-    │   ├── Role.java
-    │   ├── Permission.java
-    │   ├── MenuItem.java
+    │   ├── Admin.java
+    │   ├── BaseEntity.java
+    │   ├── Customer.java
     │   ├── Drink.java
-    │   ├── FastFood.java
     │   ├── DrinkSize.java
-    │   ├── MenuItemFactory.java
-    │   ├── StockEntry.java
-    │   ├── StockLog.java
-    │   ├── StockChangeType.java
-    │   ├── Transaction.java
-    │   ├── Order.java
+    │   ├── Employee.java
+    │   ├── FastFood.java
+    │   ├── FullTimeEmployee.java
+    │   ├── ImportItem.java
     │   ├── ImportOrder.java
     │   ├── LineItem.java
-    │   ├── OrderItem.java
-    │   ├── ImportItem.java
-    │   ├── TransactionStatus.java
+    │   ├── MemberDiscount.java
+    │   ├── MemberTier.java
+    │   ├── MenuItem.java
+    │   ├── MenuItemFactory.java
     │   ├── NoDiscount.java
-    │   └── MemberDiscount.java
+    │   ├── Order.java
+    │   ├── OrderItem.java
+    │   ├── PartTimeEmployee.java
+    │   ├── Party.java
+    │   ├── Permission.java
+    │   ├── Person.java
+    │   ├── Role.java
+    │   ├── StockChangeType.java
+    │   ├── StockEntry.java
+    │   ├── StockLog.java
+    │   ├── Store.java
+    │   ├── Supplier.java
+    │   ├── Transaction.java
+    │   └── TransactionStatus.java
     ├── persistence/
-    │   ├── TextFileRepository.java
     │   ├── CustomerConverter.java
     │   ├── EmployeeConverter.java
-    │   ├── SupplierConverter.java
+    │   ├── FileHandler.java
+    │   ├── IdGenerator.java
+    │   ├── ImportOrderConverter.java
     │   ├── MenuItemConverter.java
     │   ├── OrderConverter.java
-    │   ├── ImportOrderConverter.java
     │   ├── StockEntryConverter.java
     │   ├── StockLogConverter.java
-    │   ├── FileHandler.java
-    │   └── IdGenerator.java
-    └── service/
-        ├── CrudService.java
-        ├── CustomerService.java
-        ├── EmployeeService.java
-        ├── SupplierService.java
-        ├── MenuService.java
-        ├── AuthService.java
-        ├── InventoryService.java
-        ├── OrderService.java
-        ├── ImportService.java
-        └── ReportService.java
+    │   ├── SupplierConverter.java
+    │   └── TextFileRepository.java
+    ├── service/
+    │   ├── AuthService.java
+    │   ├── CrudService.java
+    │   ├── CustomerManager.java
+    │   ├── CustomerService.java
+    │   ├── EmployeeManager.java
+    │   ├── EmployeeService.java
+    │   ├── ImportManager.java
+    │   ├── ImportService.java
+    │   ├── InventoryService.java
+    │   ├── MenuManager.java
+    │   ├── MenuService.java
+    │   ├── OrderManager.java
+    │   ├── OrderService.java
+    │   ├── ReportService.java
+    │   ├── StockLogManager.java
+    │   ├── SupplierManager.java
+    │   └── SupplierService.java
+    └── utils/
+        ├── FileHandler.java
+        └── InputValidator.java
 ```

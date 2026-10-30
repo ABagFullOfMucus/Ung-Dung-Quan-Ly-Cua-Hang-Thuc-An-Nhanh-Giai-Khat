@@ -1,4 +1,9 @@
 package interfaces;
 
-public interface IPayable {
+public interface IStatusable {
+    boolean isStatus();
+
+    void setStatus(boolean status);
+
+    void updateStatus();
 }
