@@ -1,0 +1,581 @@
+' =====================================================================
+' STORE MANAGEMENT SYSTEM - v5 (List-only, file .txt, console, KHONG dung Exception)
+' Rang buoc:
+'   - Chi dung List (khong Map / Set / Optional)
+'   - Luu tru bang file .txt (khong JSON / DB)
+'   - Chay tren console
+'   - KHONG dung Exception: loi bao qua Result<T> (service) / boolean (entity)
+' 7 hinh:
+'   1_Overview  2_Parties  3_Menu_Inventory  4_Transactions
+'   5_Persistence  6_Services  7_Application_Result
+' Hop MAU XAM = class thuoc hinh khac, chi hien ten.
+' =====================================================================
+
+' ---------------------------------------------------------------------
+@startuml 1_Overview
+title 1. Overview - Cac tang cua he thong
+top to bottom direction
+skinparam shadowing false
+skinparam defaultFontSize 14
+skinparam rectangle {
+  RoundCorner 15
+  FontStyle bold
+}
+
+rectangle "Application (Console)\nMain, ConsoleApp, ConsoleInput, Validator" as APP #D6EAF8
+rectangle "Services\nCrudService, OrderService, ImportService,\nInventoryService, AuthService, ReportService" as SVC #D5F5E3
+rectangle "Domain\nParties, Menu, Inventory, Transactions" as DOM #FCF3CF
+rectangle "Persistence (.txt)\nRepository, TextFileRepository,\nTextConverter, FileHandler, IdGenerator" as PER #FAD7A0
+rectangle "Result<T>\nthanh cong / that bai + thong bao" as RES #F5B7B1
+
+APP --> SVC : goi, doc Result de in thong bao
+SVC --> DOM : dieu khien
+SVC --> PER : doc / ghi qua Repository
+PER ..> DOM : chuyen entity <-> dong text
+SVC ..> RES : tra ve
+
+
+@enduml
+
+' ---------------------------------------------------------------------
+@startuml 2_Parties
+title 2. Domain - Parties (user, employee, customer, supplier)
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 50
+skinparam class {
+  BackgroundColor #FEF9E7
+  BorderColor #B7950B
+  BackgroundColor<<ref>> #EEEEEE
+  BorderColor<<ref>> #999999
+}
+hide empty members
+
+abstract class BaseEntity <<ref>>
+
+abstract class Party {
+  -name: String
+  -phoneNumber: String
+  -address: String
+  +rename(name: String): void
+  +changeContact(phone: String, address: String): void
+}
+
+abstract class Person
+
+class Supplier {
+  -companyName: String
+  -email: String
+}
+
+class Customer {
+  -loyaltyPoints: int
+  -tier: MemberTier
+  +earnPoints(amountSpent: double): void
+  +redeemPoints(points: int): boolean
+}
+
+abstract class Employee {
+  -role: Role
+  +{abstract} calculatePay(): double
+}
+
+class FullTimeEmployee {
+  -monthlySalary: double
+  +calculatePay(): double
+}
+
+class PartTimeEmployee {
+  -hourlyRate: double
+  -hoursWorked: double
+  +calculatePay(): double
+}
+
+class Account {
+  -username: String
+  -passwordHash: String
+  +authenticate(rawPassword: String): boolean
+  +changePassword(oldPassword: String, newPassword: String): boolean
+}
+
+interface IPayable {
+  +calculatePay(): double
+}
+
+enum MemberTier {
+  NONE
+  SILVER
+  GOLD
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  CASHIER
+  WAITER
+  +can(p: Permission): boolean
+}
+
+enum Permission {
+  MANAGE_STAFF
+  MANAGE_MENU
+  CREATE_ORDER
+  IMPORT_STOCK
+  VIEW_REPORT
+}
+
+BaseEntity <|-- Party
+Party <|-- Person
+Party <|-- Supplier
+Person <|-- Customer
+Person <|-- Employee
+Employee <|-- FullTimeEmployee
+Employee <|-- PartTimeEmployee
+Employee ..|> IPayable
+Employee "1" *-- "0..1" Account : has login
+
+Customer --> MemberTier
+Employee --> Role
+Role ..> Permission
+@enduml
+
+' ---------------------------------------------------------------------
+@startuml 3_Menu_Inventory
+title 3. Domain - Menu va Inventory 
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 50
+skinparam class {
+  BackgroundColor #FEF9E7
+  BorderColor #B7950B
+  BackgroundColor<<ref>> #EEEEEE
+  BorderColor<<ref>> #999999
+}
+hide empty members
+
+abstract class BaseEntity <<ref>>
+abstract class Employee <<ref>>
+
+together {
+  abstract class MenuItem {
+    -name: String
+    -price: double
+    -description: String
+    +changePrice(newPrice: double): void
+  }
+  class Drink {
+    -size: DrinkSize
+  }
+  class FastFood {
+    -calories: double
+  }
+  enum DrinkSize {
+    S
+    M
+    L
+  }
+  class MenuItemFactory <<factory>> {
+    +create(type: String, fields: List<String>): MenuItem
+  }
+}
+
+together {
+  class StockEntry {
+    -quantity: int
+    +increase(n: int): boolean
+    +decrease(n: int): boolean
+    +getQuantity(): int
+  }
+  class StockLog {
+    -logTime: LocalDateTime
+    -changeType: StockChangeType
+    -quantity: int
+    -quantityBefore: int
+    -quantityAfter: int
+    -refId: String
+  }
+  enum StockChangeType {
+    IMPORT
+    SALE
+    ADJUSTMENT
+    RETURN
+  }
+}
+
+BaseEntity <|-- MenuItem
+MenuItem <|-- Drink
+MenuItem <|-- FastFood
+Drink --> DrinkSize
+MenuItemFactory ..> MenuItem : creates
+
+BaseEntity <|-- StockEntry
+BaseEntity <|-- StockLog
+StockEntry "1" --> "1" MenuItem
+StockLog --> "1" MenuItem
+StockLog --> "1" Employee : performedBy
+StockLog --> StockChangeType
+
+note bottom of StockEntry
+  Ton kho chi duoc doi qua InventoryService.
+  decrease() tra false neu khong du hang.
+  Moi lan doi deu ghi StockLog.
+end note
+
+note bottom of StockLog
+  Immutable: chi co constructor + getter.
+end note
+@enduml
+
+' ---------------------------------------------------------------------
+@startuml 4_Transactions
+title 4. Domain - Transactions 
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor #FEF9E7
+  BorderColor #B7950B
+  BackgroundColor<<ref>> #EEEEEE
+  BorderColor<<ref>> #999999
+}
+hide empty members
+
+abstract class BaseEntity <<ref>>
+abstract class MenuItem <<ref>>
+abstract class Employee <<ref>>
+class Customer <<ref>>
+class Supplier <<ref>>
+
+abstract class Transaction<I> {
+  -time: LocalDateTime
+  -status: TransactionStatus
+  -items: List<I>
+  +addItem(item: I): boolean
+  +removeItem(itemId: String): boolean
+  +getItems(): List<I>
+  +getTotal(): double
+  +confirm(): boolean
+  +cancel(): boolean
+  #{abstract} onConfirm(): void
+}
+
+class Order {
+  +complete(): boolean
+  +getFinalTotal(): double
+}
+
+class ImportOrder
+
+abstract class LineItem {
+  -quantity: int
+  -unitAmount: double
+  +getSubTotal(): double
+  +changeQuantity(q: int): boolean
+}
+
+class OrderItem
+class ImportItem
+
+enum TransactionStatus {
+  DRAFT
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+interface DiscountPolicy {
+  +apply(subtotal: double, customer: Customer): double
+}
+
+class NoDiscount
+class MemberDiscount
+
+BaseEntity <|-- Transaction
+Transaction <|-- Order
+Transaction <|-- ImportOrder
+
+LineItem <|-- OrderItem
+LineItem <|-- ImportItem
+Transaction "1" *-- "0..*" LineItem : contains
+LineItem --> "1" MenuItem
+
+Transaction --> TransactionStatus
+Transaction --> "1" Employee : handledBy
+Order --> "0..1" Customer : placedBy
+ImportOrder --> "1" Supplier : suppliedBy
+
+Order --> "1" DiscountPolicy
+DiscountPolicy <|.. NoDiscount
+DiscountPolicy <|.. MemberDiscount
+
+note right of Transaction
+  Template Method: confirm() kiem tra trang thai hop le
+  (khong hop le -> tra false), goi onConfirm() cua lop con,
+  roi doi status.
+  Entity KHONG goi Service. Viec tru / cong ton kho
+  do OrderService / ImportService goi InventoryService.
+end note
+@enduml
+
+' ---------------------------------------------------------------------
+@startuml 5_Persistence
+title 5. Persistence - Luu file .txt 
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor #FDEBD0
+  BorderColor #CA6F1E
+}
+hide empty members
+
+interface Repository<T> {
+  +add(entity: T): void
+  +update(entity: T): void
+  +findById(id: String): T
+  +findAll(): List<T>
+}
+
+class TextFileRepository<T> {
+  -filePath: String
+  -items: List<T>
+  -converter: TextConverter<T>
+  +load(): void
+  +flush(): void
+}
+
+interface TextConverter<T> {
+  +toLine(entity: T): String
+  +fromLine(line: String): T
+}
+
+class CustomerConverter
+class EmployeeConverter
+class SupplierConverter
+class MenuItemConverter
+class OrderConverter
+class ImportOrderConverter
+class StockEntryConverter
+class StockLogConverter
+
+class FileHandler <<utility>> {
+  +readLines(path: String): List<String>
+  +writeLines(path: String, lines: List<String>): void
+}
+
+class IdGenerator <<utility>> {
+  +next(prefix: String, existingIds: List<String>): String
+}
+
+Repository <|.. TextFileRepository
+TextFileRepository --> TextConverter
+TextFileRepository ..> FileHandler
+TextConverter <|.. CustomerConverter
+TextConverter <|.. EmployeeConverter
+TextConverter <|.. SupplierConverter
+TextConverter <|.. MenuItemConverter
+TextConverter <|.. OrderConverter
+TextConverter <|.. ImportOrderConverter
+TextConverter <|.. StockEntryConverter
+TextConverter <|.. StockLogConverter
+
+note bottom of TextFileRepository
+  Moi entity 1 file .txt, moi dong 1 object (ngan cach bang "|").
+  Tham chieu giua entity luu bang ID (vd Order luu customerId).
+  Thu tu load: Employee, Customer, Supplier, MenuItem
+  roi moi toi StockEntry, Order, ImportOrder, StockLog.
+end note
+
+note bottom of TextConverter
+  Entity KHONG co toFileString / fromFileString.
+  findById() tra null neu khong co.
+  fromLine() tra null neu dong bi hong -> load() bo qua dong do.
+  Doi dinh dang luu chi sua Converter.
+end note
+@enduml
+
+' ---------------------------------------------------------------------
+@startuml 6_Services
+title 6. Services - Nghiep vu  
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 55
+skinparam class {
+  BackgroundColor #E8F8F5
+  BorderColor #1E8449
+  BackgroundColor<<ref>> #EEEEEE
+  BorderColor<<ref>> #999999
+}
+hide empty members
+
+interface Repository<T> <<ref>>
+class IdGenerator <<ref>>
+class Result<T> <<ref>>
+
+abstract class CrudService<T> {
+  #repository: Repository<T>
+  +add(entity: T): Result<T>
+  +update(entity: T): Result<T>
+  +deactivate(id: String): Result<T>
+  +getById(id: String): Result<T>
+  +getAll(): List<T>
+  #{abstract} newId(): String
+}
+
+class CustomerService
+class EmployeeService
+class SupplierService
+class MenuService
+
+class AuthService {
+  +login(username: String, password: String): Result<Employee>
+}
+
+class InventoryService {
+  +receive(item: MenuItem, qty: int, ref: String, by: Employee): Result<StockEntry>
+  +issue(item: MenuItem, qty: int, ref: String, by: Employee): Result<StockEntry>
+  +adjust(item: MenuItem, newQty: int, by: Employee): Result<StockEntry>
+  +getQuantity(itemId: String): int
+  +getHistory(itemId: String): List<StockLog>
+}
+
+class OrderService {
+  +createOrder(customerId: String, employee: Employee): Result<Order>
+  +addItem(orderId: String, itemId: String, qty: int): Result<Order>
+  +confirmOrder(orderId: String): Result<Order>
+  +cancelOrder(orderId: String): Result<Order>
+}
+
+class ImportService {
+  +createImport(supplierId: String, employee: Employee): Result<ImportOrder>
+  +addItem(importId: String, itemId: String, qty: int, cost: double): Result<ImportOrder>
+  +receiveImport(importId: String): Result<ImportOrder>
+}
+
+class ReportService {
+  +revenueBetween(from: LocalDate, to: LocalDate): double
+  +lowStockItems(threshold: int): List<MenuItem>
+}
+
+CrudService <|-- CustomerService
+CrudService <|-- EmployeeService
+CrudService <|-- SupplierService
+CrudService <|-- MenuService
+
+CrudService --> Repository
+CrudService ..> IdGenerator
+CrudService ..> Result
+OrderService ..> Result
+ImportService ..> Result
+InventoryService ..> Result
+AuthService ..> Result
+
+OrderService --> InventoryService : issue stock
+ImportService --> InventoryService : receive stock
+
+OrderService --> Repository
+ImportService --> Repository
+InventoryService --> Repository
+AuthService --> Repository
+ReportService --> Repository
+
+note bottom of CrudService
+  Khong tim thay / trung ID -> Result.fail("...").
+  Xoa mem: deactivate() thay vi xoa khoi List.
+end note
+@enduml
+
+' ---------------------------------------------------------------------
+@startuml 7_Application_Result
+title 7. Application (Console UI)
+top to bottom direction
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam nodesep 35
+skinparam ranksep 50
+skinparam class {
+  BackgroundColor #EBF5FB
+  BorderColor #2874A6
+  BackgroundColor<<ref>> #EEEEEE
+  BorderColor<<ref>> #999999
+  BackgroundColor<<res>> #FDEDEC
+  BorderColor<<res>> #CB4335
+}
+hide empty members
+
+package "Application" {
+  class Main {
+    +main(args: String[]): void
+  }
+  class ConsoleApp {
+    +run(): void
+    -showMainMenu(): void
+  }
+  class ConsoleInput <<utility>> {
+    +readRequiredText(msg: String): String
+    +readPositiveInt(msg: String): int
+    +readPositiveDouble(msg: String): double
+  }
+  class Validator <<utility>> {
+    +isValidPhone(phone: String): boolean
+    +isValidEmail(email: String): boolean
+  }
+}
+
+package "Services" {
+  class CustomerService <<ref>>
+  class EmployeeService <<ref>>
+  class SupplierService <<ref>>
+  class MenuService <<ref>>
+  class OrderService <<ref>>
+  class ImportService <<ref>>
+  class InventoryService <<ref>>
+  class AuthService <<ref>>
+  class ReportService <<ref>>
+}
+
+package "Common" {
+  class Result<T> <<res>> {
+    -success: boolean
+    -message: String
+    -data: T
+    +{static} ok(data: T): Result<T>
+    +{static} fail(message: String): Result<T>
+    +isSuccess(): boolean
+    +getMessage(): String
+    +getData(): T
+  }
+}
+
+Main ..> ConsoleApp : tao Repository, Service\nroi truyen vao ConsoleApp
+ConsoleApp ..> ConsoleInput
+ConsoleApp ..> Validator
+
+ConsoleApp --> CustomerService
+ConsoleApp --> EmployeeService
+ConsoleApp --> SupplierService
+ConsoleApp --> MenuService
+ConsoleApp --> OrderService
+ConsoleApp --> ImportService
+ConsoleApp --> InventoryService
+ConsoleApp --> AuthService
+ConsoleApp --> ReportService
+
+ConsoleApp ..> Result : doc ket qua
+
+note bottom of ConsoleApp
+  Chi ConsoleApp in ra console.
+  Neu result.isSuccess() = false -> in result.getMessage().
+  Cac tang duoi chi tra Result, khong tu System.out.println.
+end note
+@enduml
