@@ -443,8 +443,8 @@
     }
     class InputValidator {
         <<utility>>
-        +getInt(sc : Scanner, prompt : String)$ int
-        +getDouble(sc : Scanner, prompt : String)$ double
-        +getNonEmptyString(sc : Scanner, prompt : String)$ String
-        +getBoolean(sc : Scanner, prompt : String)$ boolean
+        +getInt(prompt : String)$ int
+        +getDouble(prompt : String)$ double
+        +getNonEmptyString(prompt : String)$ String
+        +getBoolean(prompt : String)$ boolean
     }

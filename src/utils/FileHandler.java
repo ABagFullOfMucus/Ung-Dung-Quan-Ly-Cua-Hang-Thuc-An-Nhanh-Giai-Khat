@@ -7,34 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import interfaces.IStorable;
-
 public class FileHandler {
 
-	// Ghi danh sách đối tượng IStorable vào file (mỗi đối tượng một dòng)
-	public static boolean saveToFile(String fileName, IStorable[] items, int count) {
-		File file = new File(fileName);
-		
-		File parent = file.getParentFile();
-		if (parent != null && !parent.exists()) {
-			parent.mkdirs();
-		}
-		
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-			for (int i = 0; i < count; i++) {
-				if (items[i] == null) continue;
-				
-				writer.write(items[i].toFileString());
-				writer.newLine();
-			}
-			
-			return true;
-		} catch (IOException e) {
-			System.out.println("Lỗi khi ghi file " + fileName + ": " + e.getMessage());
-			return false;
-		}
-	}
-	
 	// Đếm số dòng hợp lệ (không trống) trong file, trả về 0 nếu file chưa tồn tại
 	public static int countLines(String fileName) {
 		File file = new File(fileName);

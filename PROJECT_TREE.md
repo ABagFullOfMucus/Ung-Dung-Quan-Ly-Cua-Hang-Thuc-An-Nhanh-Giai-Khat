@@ -21,11 +21,8 @@ Ung-Dung-Quan-Ly-Cua-Hang-Thuc-An-Nhanh-Giai-Khat/
     │   └── Result.java
     ├── interfaces/
     │   ├── DiscountPolicy.java
-    │   ├── IDiscountable.java
-    │   ├── IPayable.java
-    │   ├── IStatusable.java
-    │   ├── IStorable.java
-    │   ├── Repository.java
+        │   ├── IPayable.java
+            │   ├── Repository.java
     │   └── TextConverter.java
     ├── model/
     │   ├── Account.java
