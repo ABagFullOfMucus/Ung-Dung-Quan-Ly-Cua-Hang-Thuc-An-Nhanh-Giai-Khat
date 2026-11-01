@@ -1,6 +1,7 @@
 package service;
 
-import model.MenuItem;
+import model.menu.MenuItem;
+import service.base.CrudService;
 
 public class MenuService extends CrudService<MenuItem> {
 }
