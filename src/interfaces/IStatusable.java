@@ -1,9 +1,7 @@
 package interfaces;
 
+import model.TransactionStatus;
+
 public interface IStatusable {
-    boolean isStatus();
-
-    void setStatus(boolean status);
-
-    void updateStatus();
+    TransactionStatus getStatus();
 }
