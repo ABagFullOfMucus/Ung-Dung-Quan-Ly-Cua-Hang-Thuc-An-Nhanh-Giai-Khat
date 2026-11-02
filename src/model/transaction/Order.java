@@ -53,7 +53,6 @@ public class Order extends Transaction<OrderItem> {
     }
 
     @Override
-    protected boolean onConfirm() {
-        return true;
+    protected void onConfirm() {
     }
 }

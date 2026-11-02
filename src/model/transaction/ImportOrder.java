@@ -24,7 +24,6 @@ public class ImportOrder extends Transaction<ImportItem> {
     }
 
     @Override
-    protected boolean onConfirm() {
-        return !getItems().isEmpty();
+    protected void onConfirm() {
     }
 }

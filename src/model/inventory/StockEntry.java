@@ -29,17 +29,19 @@ public class StockEntry extends BaseEntity {
         return quantity;
     }
 
-    public void increase(int amount) {
-        if (amount > 0) {
-            this.quantity += amount;
-        }
-    }
-
-    public boolean decrease(int amount) {
-        if (amount <= 0 || amount > this.quantity) {
+    public boolean increase(int n) {
+        if (n <= 0) {
             return false;
         }
-        this.quantity -= amount;
+        this.quantity += n;
+        return true;
+    }
+
+    public boolean decrease(int n) {
+        if (n <= 0 || n > this.quantity) {
+            return false;
+        }
+        this.quantity -= n;
         return true;
     }
 }

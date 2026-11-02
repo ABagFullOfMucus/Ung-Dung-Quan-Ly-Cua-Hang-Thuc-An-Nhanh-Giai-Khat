@@ -29,7 +29,7 @@ public abstract class MenuItem extends BaseEntity {
     public double getPrice() {
         return price;
     }
-
+    
     public void changePrice(double newPrice) {
         if (newPrice > 0) {
             this.price = newPrice;
@@ -43,6 +43,4 @@ public abstract class MenuItem extends BaseEntity {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    
 }

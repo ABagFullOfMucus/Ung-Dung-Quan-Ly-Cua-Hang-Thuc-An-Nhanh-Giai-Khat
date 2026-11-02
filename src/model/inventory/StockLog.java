@@ -2,6 +2,7 @@ package model.inventory;
 
 import java.time.LocalDateTime;
 import model.base.BaseEntity;
+import model.employee.Employee;
 
 // Immutable class: Chi co constructor va getter
 public class StockLog extends BaseEntity {
@@ -12,6 +13,7 @@ public class StockLog extends BaseEntity {
     private final int quantityBefore;
     private final int quantityAfter;
     private final String refId;
+    private final Employee performedBy;
 
     public StockLog() {
         super();
@@ -22,10 +24,11 @@ public class StockLog extends BaseEntity {
         this.quantityBefore = 0;
         this.quantityAfter = 0;
         this.refId = null;
+        this.performedBy = null;
     }
 
     public StockLog(String id, String menuItemId, LocalDateTime logTime, StockChangeType changeType,
-                    int quantity, int quantityBefore, int quantityAfter, String refId) {
+                    int quantity, int quantityBefore, int quantityAfter, String refId, Employee performedBy) {
         super(id);
         this.menuItemId = menuItemId;
         this.logTime = logTime;
@@ -34,6 +37,7 @@ public class StockLog extends BaseEntity {
         this.quantityBefore = quantityBefore;
         this.quantityAfter = quantityAfter;
         this.refId = refId;
+        this.performedBy = performedBy;
     }
 
     public String getMenuItemId() {
@@ -62,5 +66,9 @@ public class StockLog extends BaseEntity {
 
     public String getRefId() {
         return refId;
+    }
+
+    public Employee getPerformedBy() {
+        return performedBy;
     }
 }
