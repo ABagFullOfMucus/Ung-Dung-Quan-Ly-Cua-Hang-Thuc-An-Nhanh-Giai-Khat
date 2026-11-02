@@ -1,5 +1,7 @@
 package interfaces;
 
-public interface DiscountPolicy {
+import model.customer.Customer;
 
+public interface DiscountPolicy {
+    double apply(double subtotal, Customer customer);
 }
