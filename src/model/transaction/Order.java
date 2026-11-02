@@ -3,6 +3,7 @@ package model.transaction;
 import interfaces.DiscountPolicy;
 import model.customer.Customer;
 import model.customer.NoDiscount;
+import model.employee.Employee;
 
 public class Order extends Transaction<OrderItem> {
     private Customer placedBy;
@@ -13,8 +14,8 @@ public class Order extends Transaction<OrderItem> {
         this.discountPolicy = new NoDiscount();
     }
 
-    public Order(String id, String employeeId, Customer placedBy) {
-        super(id, employeeId);
+    public Order(String id, Employee handledBy, Customer placedBy) {
+        super(id, handledBy);
         this.placedBy = placedBy;
         this.discountPolicy = new NoDiscount();
     }

@@ -18,16 +18,15 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         super();
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
-        this.items = Arrays.asList((I[]) new LineItem[0]);
+        this.items = Collections.emptyList();
     }
 
-    @SuppressWarnings("unchecked")
     public Transaction(String id, Employee handledBy) {
         super(id);
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
         this.handledBy = handledBy;
-        this.items = Arrays.asList((I[]) new LineItem[0]);
+        this.items = Collections.emptyList();
     }
 
     public LocalDateTime getTime() {
@@ -64,6 +63,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
             return false;
         }
 
+        // Kiểm tra xem item đã tồn tại trong danh sách chưa
         for (I existing : items) {
             if (existing != null && existing.getItem() != null && item.getItem() != null
                     && existing.getItem().getId().equals(item.getItem().getId())) {
@@ -71,6 +71,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
             }
         }
 
+        // Tăng dung lượng mảng và tạo List mới
         int oldSize = this.items.size();
         I[] newArray = (I[]) new LineItem[oldSize + 1];
         for (int i = 0; i < oldSize; i++) {
@@ -111,8 +112,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
     public double getTotal() {
         double total = 0.0;
-        for (int i = 0; i < items.size(); i++) {
-            I item = items.get(i);
+        for (I item : items) {
             if (item != null) {
                 total += item.getSubTotal();
             }
