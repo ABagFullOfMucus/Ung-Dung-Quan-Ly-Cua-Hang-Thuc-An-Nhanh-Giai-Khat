@@ -1,7 +1,9 @@
 package persistence.converter;
 
+
 import model.customer.Customer;
 import persistence.converter.base.BaseTextConverter;
+import utils.Validator;
 
 public class CustomerConverter extends BaseTextConverter<Customer> {
     private static final int FIELD_COUNT = 5;
@@ -42,6 +44,9 @@ public class CustomerConverter extends BaseTextConverter<Customer> {
             return null;
         }
 
+        if(!Validator.isValidPhone(parts[2].trim()))
+            return null;
+        
         int points;
         try {
             points = Integer.parseInt(parts[4].trim());

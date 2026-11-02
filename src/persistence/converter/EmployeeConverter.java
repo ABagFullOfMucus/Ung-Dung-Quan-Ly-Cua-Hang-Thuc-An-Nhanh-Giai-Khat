@@ -5,6 +5,7 @@ import model.employee.FullTimeEmployee;
 import model.employee.PartTimeEmployee;
 import model.employee.Role;
 import persistence.converter.base.BaseTextConverter;
+import utils.Validator;
 
 public class EmployeeConverter extends BaseTextConverter<Employee> {
     private static final String FULL_TIME = "FULLTIME";
@@ -37,7 +38,7 @@ public class EmployeeConverter extends BaseTextConverter<Employee> {
 
     public Employee fromLine(String line) {
         String[] parts = split(line);
-        if (parts == null || parts.length < 6) {
+        if (parts == null || parts.length < 6 || !Validator.isValidPhone(parts[2])) {
             return null;
         }
 
