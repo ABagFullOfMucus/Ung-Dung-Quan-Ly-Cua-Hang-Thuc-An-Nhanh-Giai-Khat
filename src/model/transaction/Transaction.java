@@ -18,7 +18,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         super();
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
-        this.items = Collections.emptyList();
+        this.items = Arrays.asList((I[]) new LineItem[0]);
     }
 
     public Transaction(String id, Employee handledBy) {
@@ -26,7 +26,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
         this.handledBy = handledBy;
-        this.items = Collections.emptyList();
+        this.items = Arrays.asList((I[]) new LineItem[0]);
     }
 
     public LocalDateTime getTime() {
