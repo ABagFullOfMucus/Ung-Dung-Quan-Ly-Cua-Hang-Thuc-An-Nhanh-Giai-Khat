@@ -7,7 +7,7 @@ public class ImportItem extends LineItem {
         super();
     }
     
-    public ImportItem(MenuItem item, int quantity, double cost) {
-        super(item, quantity, cost);
+    public ImportItem(MenuItem item, int quantity, double unitAmount) {
+        super(item, quantity, unitAmount);
     }
 }

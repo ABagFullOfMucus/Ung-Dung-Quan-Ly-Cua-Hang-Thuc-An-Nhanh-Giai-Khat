@@ -2,9 +2,7 @@ package model.transaction;
 
 import interfaces.DiscountPolicy;
 import model.customer.Customer;
-import model.customer.MemberDiscount;
 import model.customer.NoDiscount;
-import model.employee.Employee;
 
 public class Order extends Transaction<OrderItem> {
     private Customer placedBy;
@@ -15,10 +13,10 @@ public class Order extends Transaction<OrderItem> {
         this.discountPolicy = new NoDiscount();
     }
 
-    public Order(String id, Employee handledBy, Customer placedBy) {
-        super(id, handledBy);
+    public Order(String id, String employeeId, Customer placedBy) {
+        super(id, employeeId);
         this.placedBy = placedBy;
-        this.discountPolicy = (placedBy != null) ? new MemberDiscount() : new NoDiscount();
+        this.discountPolicy = new NoDiscount();
     }
 
     public Customer getPlacedBy() {
@@ -27,9 +25,6 @@ public class Order extends Transaction<OrderItem> {
 
     public void setPlacedBy(Customer placedBy) {
         this.placedBy = placedBy;
-        if (this.placedBy != null && this.discountPolicy instanceof NoDiscount) {
-            this.discountPolicy = new MemberDiscount();
-        }
     }
 
     public DiscountPolicy getDiscountPolicy() {
@@ -41,15 +36,16 @@ public class Order extends Transaction<OrderItem> {
     }
 
     public double getFinalTotal() {
-        return (discountPolicy == null) ? getTotal() : discountPolicy.apply(getTotal(), placedBy);
+        double total = getTotal();
+        if (discountPolicy != null) {
+            return discountPolicy.apply(total, this.placedBy);
+        }
+        return total;   
     }
 
     public boolean complete() {
         if (getStatus() != TransactionStatus.CONFIRMED) {
             return false;
-        }
-        if (placedBy != null) {
-            placedBy.earnPoints(getFinalTotal());
         }
         setStatus(TransactionStatus.COMPLETED);
         return true;
@@ -57,6 +53,6 @@ public class Order extends Transaction<OrderItem> {
 
     @Override
     protected boolean onConfirm() {
-        return !getItems().isEmpty();
+        return true;
     }
 }

@@ -63,8 +63,19 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         if (this.status != TransactionStatus.DRAFT || item == null) {
             return false;
         }
+
+        for (I existing : items) {
+            if (existing != null && existing.getItem() != null && item.getItem() != null
+                    && existing.getItem().getId().equals(item.getItem().getId())) {
+                return existing.changeQuantity(existing.getQuantity() + item.getQuantity());
+            }
+        }
+
         int oldSize = this.items.size();
-        I[] newArray = Arrays.copyOf(this.items.toArray((I[]) new LineItem[0]), oldSize + 1);
+        I[] newArray = (I[]) new LineItem[oldSize + 1];
+        for (int i = 0; i < oldSize; i++) {
+            newArray[i] = this.items.get(i);
+        }
         newArray[oldSize] = item;
         this.items = Arrays.asList(newArray);
         return true;
@@ -100,7 +111,8 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
     public double getTotal() {
         double total = 0.0;
-        for (I item : items) {
+        for (int i = 0; i < items.size(); i++) {
+            I item = items.get(i);
             if (item != null) {
                 total += item.getSubTotal();
             }
@@ -120,7 +132,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
     }
 
     public boolean cancel() {
-        if (this.status == TransactionStatus.COMPLETED) {
+        if (this.status == TransactionStatus.COMPLETED || this.status == TransactionStatus.CANCELLED) {
             return false;
         }
         this.status = TransactionStatus.CANCELLED;
