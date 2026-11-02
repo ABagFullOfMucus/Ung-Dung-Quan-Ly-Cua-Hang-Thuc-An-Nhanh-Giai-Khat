@@ -2,9 +2,8 @@ package model.inventory;
 
 import java.time.LocalDateTime;
 import model.base.BaseEntity;
-import model.employee.Employee;
-import model.menu.MenuItem;
 
+// Immutable class: Chi co constructor va getter
 public class StockLog extends BaseEntity {
     private final String menuItemId;
     private final LocalDateTime logTime;
@@ -13,6 +12,17 @@ public class StockLog extends BaseEntity {
     private final int quantityBefore;
     private final int quantityAfter;
     private final String refId;
+
+    public StockLog() {
+        super();
+        this.menuItemId = null;
+        this.logTime = null;
+        this.changeType = null;
+        this.quantity = 0;
+        this.quantityBefore = 0;
+        this.quantityAfter = 0;
+        this.refId = null;
+    }
 
     public StockLog(String id, String menuItemId, LocalDateTime logTime, StockChangeType changeType,
                     int quantity, int quantityBefore, int quantityAfter, String refId) {
