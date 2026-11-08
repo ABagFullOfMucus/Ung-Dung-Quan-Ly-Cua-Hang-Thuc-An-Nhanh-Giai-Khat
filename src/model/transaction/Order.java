@@ -9,11 +9,6 @@ public class Order extends Transaction<OrderItem> {
     private Customer placedBy;
     private DiscountPolicy discountPolicy;
 
-    public Order() {
-        super();
-        this.discountPolicy = new NoDiscount();
-    }
-
     public Order(String id, Employee handledBy, Customer placedBy) {
         super(id, handledBy);
         this.placedBy = placedBy;
@@ -36,20 +31,20 @@ public class Order extends Transaction<OrderItem> {
         this.discountPolicy = discountPolicy;
     }
 
-    public double getFinalTotal() {
-        double total = getTotal();
-        if (discountPolicy != null) {
-            return discountPolicy.apply(total, this.placedBy);
-        }
-        return total;   
-    }
-
     public boolean complete() {
         if (getStatus() != TransactionStatus.CONFIRMED) {
             return false;
         }
         setStatus(TransactionStatus.COMPLETED);
         return true;
+    }
+
+    public double getFinalTotal() {
+        double total = getTotal();
+        if (discountPolicy != null) {
+            return discountPolicy.apply(total, this.placedBy);
+        }
+        return total;   
     }
 
     @Override

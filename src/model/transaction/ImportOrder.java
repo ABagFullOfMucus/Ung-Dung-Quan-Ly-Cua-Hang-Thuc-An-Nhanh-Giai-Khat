@@ -6,10 +6,6 @@ import model.supplier.Supplier;
 public class ImportOrder extends Transaction<ImportItem> {
     private Supplier suppliedBy;
 
-    public ImportOrder() {
-        super();
-    }
-
     public ImportOrder(String id, Employee handledBy, Supplier suppliedBy) {
         super(id, handledBy);
         this.suppliedBy = suppliedBy;

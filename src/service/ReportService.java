@@ -1,86 +1,55 @@
 package service;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
+import model.menu.MenuItem;
+import model.transaction.Order;
+import model.transaction.TransactionStatus;
+import persistence.Repository;
 
-import interfaces.Repository;
-import model.MenuItem;
-import model.Order;
-import model.StockEntry;
-import model.TransactionStatus;
+import java.time.LocalDate;
 
 public class ReportService {
-    private Repository<Order> orderRepository;
-    private Repository<StockEntry> stockEntryRepository;
-    private Repository<MenuItem> menuItemRepository;
+    private final Repository<Order> orderRepository;
+    private final Repository<MenuItem> menuRepository;
+    private final InventoryService inventoryService;
 
-    public ReportService( Repository<Order> orderRepository,
-            Repository<StockEntry> stockEntryRepository,
-            Repository<MenuItem> menuItemRepository) {
+    public ReportService(Repository<Order> orderRepository,
+                         Repository<MenuItem> menuRepository,
+                         InventoryService inventoryService) {
         this.orderRepository = orderRepository;
-        this.stockEntryRepository = stockEntryRepository;
-        this.menuItemRepository = menuItemRepository;
+        this.menuRepository = menuRepository;
+        this.inventoryService = inventoryService;
     }
 
     public double revenueBetween(LocalDate from, LocalDate to) {
-        if (from == null || to == null || from.isAfter(to)) {
-            return 0.0;
+        if (from == null || to == null) {
+            return 0;
         }
-
-        List<Order> orders = orderRepository.findAll();
-        double revenue = 0.0;
-
-        for (int i = 0; i < orders.size(); i++) {
-            Order order = orders.get(i);
-
-            if (order == null || order.getTime() == null) {
-                continue;
-            }
-
+        double total = 0;
+        for (Order order : orderRepository.findAll()) {
             if (order.getStatus() != TransactionStatus.COMPLETED) {
                 continue;
             }
-
-            LocalDate orderDate = order.getTime().toLocalDate();
-
-            if (!orderDate.isBefore(from) && !orderDate.isAfter(to)) {
-                revenue += order.getFinalTotal();
+            LocalDate date = order.getTime().toLocalDate();
+            if (!date.isBefore(from) && !date.isAfter(to)) {
+                total += order.getFinalTotal();
             }
         }
-
-        return revenue;
+        return total;
     }
 
-    public List<MenuItem> lowStockItems(int threshold) {
-        List<StockEntry> entries = stockEntryRepository.findAll();
-
-        MenuItem[] lowStock = new MenuItem[entries.size()];
+    public MenuItem[] lowStockItems(int threshold) {
+        MenuItem[] items = menuRepository.findAll();
+        MenuItem[] found = new MenuItem[items.length];
         int count = 0;
-
-        for (int i = 0; i < entries.size(); i++) {
-            StockEntry entry = entries.get(i);
-
-            if (entry == null) {
-                continue;
-            }
-
-            if (entry.getQuantity() >= threshold) {
-                continue;
-            }
-
-            if (entry.getItem() == null) {
-                continue;
-            }
-
-            MenuItem item = menuItemRepository.findById( entry.getItem().getId());
-
-            if (item != null) {
-                lowStock[count] = item;
-                count++;
+        for (MenuItem item : items) {
+            if (item.isActive() && inventoryService.getQuantity(item.getId()) <= threshold) {
+                found[count++] = item;
             }
         }
-
-        return Arrays.asList(Arrays.copyOf(lowStock, count));
+        MenuItem[] result = new MenuItem[count];
+        for (int i = 0; i < count; i++) {
+            result[i] = found[i];
+        }
+        return result;
     }
 }

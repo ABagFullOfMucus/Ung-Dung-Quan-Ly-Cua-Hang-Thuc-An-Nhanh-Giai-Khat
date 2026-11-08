@@ -1,7 +1,6 @@
 package model.transaction;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import model.base.BaseEntity;
 import model.employee.Employee;
 
@@ -9,23 +8,16 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
     private LocalDateTime time;
     private TransactionStatus status;
     private Employee handledBy;
-    private I[] items;
+    private LineItem[] items;
+    private int itemCount;
 
-    @SuppressWarnings("unchecked")
-    public Transaction() {
-        super();
-        this.time = LocalDateTime.now();
-        this.status = TransactionStatus.DRAFT;
-        this.items = (I[]) new LineItem[0];
-    }
-
-    @SuppressWarnings("unchecked")
     public Transaction(String id, Employee handledBy) {
         super(id);
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
         this.handledBy = handledBy;
-        this.items = (I[]) new LineItem[0];
+        this.items = new LineItem[0];
+        this.itemCount = 0;
     }
 
     public LocalDateTime getTime() {
@@ -52,43 +44,48 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         this.handledBy = handledBy;
     }
 
-    public I[] getItems() {
-        return Arrays.copyOf(items, items.length);
+    public LineItem[] getItems() {
+        LineItem[] result = new LineItem[itemCount];
+        for (int i = 0; i < itemCount; i++) {
+            result[i] = items[i];
+        }
+        return result;
     }
 
-    @SuppressWarnings("unchecked")
     public boolean addItem(I item) {
-        if (this.status != TransactionStatus.DRAFT || item == null) {
+        if (this.status != TransactionStatus.DRAFT || item == null || itemCount == 0) {
             return false;
         }
 
-        for (I existing : items) {
-            if (existing != null && existing.getItem() != null && item.getItem() != null
-                    && existing.getItem().getId().equals(item.getItem().getId())) {
+        // Kiểm tra xem item đã tồn tại trong danh sách chưa
+        for (int i = 0; i < itemCount; i++) {
+            LineItem existing = items[i];
+            if (existing != null && existing.getMenuItem() != null && item.getMenuItem() != null
+                    && existing.getMenuItem().getId().equals(item.getMenuItem().getId())) {
                 return existing.changeQuantity(existing.getQuantity() + item.getQuantity());
             }
         }
 
-        int oldSize = this.items.length;
-        I[] newArray = (I[]) new LineItem[oldSize + 1];
-        for (int i = 0; i < oldSize; i++) {
-            newArray[i] = this.items[i];
+        // Tăng dung lượng mảng
+        LineItem[] newArray = new LineItem[itemCount + 1];
+        for (int i = 0; i < itemCount; i++) {
+            newArray[i] = items[i];
         }
-        newArray[oldSize] = item;
+        newArray[itemCount] = item;
         this.items = newArray;
+        this.itemCount++;
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     public boolean removeItem(String itemId) {
-        if (this.status != TransactionStatus.DRAFT || itemId == null || this.items.length == 0) {
+        if (this.status != TransactionStatus.DRAFT || itemId == null || this.itemCount == 0) {
             return false;
         }
 
         int index = -1;
-        for (int i = 0; i < items.length; i++) {
-            I lineItem = items[i];
-            if (lineItem != null && lineItem.getItem() != null && itemId.equals(lineItem.getItem().getId())) {
+        for (int i = 0; i < itemCount; i++) {
+            LineItem lineItem = items[i];
+            if (lineItem != null && lineItem.getMenuItem() != null && itemId.equals(lineItem.getMenuItem().getId())) {
                 index = i;
                 break;
             }
@@ -96,20 +93,22 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
         if (index == -1) return false;
 
-        I[] newArray = (I[]) new LineItem[items.length - 1];
+        LineItem[] newArray = new LineItem[itemCount - 1];
         int k = 0;
-        for (int i = 0; i < items.length; i++) {
+        for (int i = 0; i < itemCount; i++) {
             if (i != index) {
                 newArray[k++] = items[i];
             }
         }
         this.items = newArray;
+        this.itemCount--;
         return true;
     }
 
     public double getTotal() {
         double total = 0.0;
-        for (I item : items) {
+        for (int i = 0; i < itemCount; i++) {
+            LineItem item = items[i];
             if (item != null) {
                 total += item.getSubTotal();
             }
@@ -117,7 +116,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         return total;
     }
 
-    public boolean confirm() {
+    public final boolean confirm() {
         if (this.status != TransactionStatus.DRAFT) {
             return false;
         }
@@ -127,11 +126,12 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
     }
 
     public boolean cancel() {
-        if (this.status == TransactionStatus.COMPLETED || this.status == TransactionStatus.CANCELLED) {
+        if (this.status != TransactionStatus.DRAFT) {
             return false;
         }
         this.status = TransactionStatus.CANCELLED;
         return true;
     }
+
     protected abstract void onConfirm();
 }

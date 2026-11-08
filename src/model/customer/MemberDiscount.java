@@ -9,20 +9,14 @@ public class MemberDiscount implements DiscountPolicy {
             return subtotal;
         }
 
-        double discountRate = 0.0;
         switch (customer.getTier()) {
             case SILVER:
-                discountRate = 0.05;
-                break;
+                return subtotal * 0.95;
             case GOLD:
-                discountRate = 0.10;
-                break;
+                return subtotal * 0.90;
             case NONE:
             default:
-                discountRate = 0.0;
-                break;
+                return subtotal;
         }
-
-        return subtotal * (1.0 - discountRate);
     }
 }
