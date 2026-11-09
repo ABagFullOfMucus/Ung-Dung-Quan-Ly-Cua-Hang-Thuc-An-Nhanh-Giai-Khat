@@ -44,16 +44,17 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         this.handledBy = handledBy;
     }
 
-    public LineItem[] getItems() {
+    @SuppressWarnings("unchecked")
+    public I[] getItems() {
         LineItem[] result = new LineItem[itemCount];
         for (int i = 0; i < itemCount; i++) {
             result[i] = items[i];
         }
-        return result;
+        return (I[]) result;
     }
 
     public boolean addItem(I item) {
-        if (this.status != TransactionStatus.DRAFT || item == null || itemCount == 0) {
+        if (this.status != TransactionStatus.DRAFT || item == null) {
             return false;
         }
 
