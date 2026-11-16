@@ -1,0 +1,2 @@
+DRINK|MN001|Coca Cola|15000|Nuoc ngot|M|true
+FOOD|MN002|Hamburger|45000|Burger pho mai|550|true
