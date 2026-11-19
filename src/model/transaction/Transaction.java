@@ -1,5 +1,6 @@
 package model.transaction;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import model.base.BaseEntity;
 import model.employee.Employee;
@@ -8,15 +9,28 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
     private LocalDateTime time;
     private TransactionStatus status;
     private Employee handledBy;
-    private LineItem[] items;
+    private I[] items;
     private int itemCount;
+    private final Class<I> itemType;
 
-    public Transaction(String id, Employee handledBy) {
+    @SuppressWarnings("unchecked")
+    public Transaction(Class<I> itemType) {
+        super();
+        this.itemType = itemType;
+        this.time = LocalDateTime.now();
+        this.status = TransactionStatus.DRAFT;
+        this.items = (I[]) Array.newInstance(itemType, 0);
+        this.itemCount = 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Transaction(String id, Employee handledBy, Class<I> itemType) {
         super(id);
+        this.itemType = itemType;
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
         this.handledBy = handledBy;
-        this.items = new LineItem[0];
+        this.items = (I[]) Array.newInstance(itemType, 0);
         this.itemCount = 0;
     }
 
@@ -46,13 +60,14 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
     @SuppressWarnings("unchecked")
     public I[] getItems() {
-        LineItem[] result = new LineItem[itemCount];
+        I[] result = (I[]) Array.newInstance(itemType, itemCount);
         for (int i = 0; i < itemCount; i++) {
             result[i] = items[i];
         }
-        return (I[]) result;
+        return result;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean addItem(I item) {
         if (this.status != TransactionStatus.DRAFT || item == null) {
             return false;
@@ -60,15 +75,15 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
         // Kiểm tra xem item đã tồn tại trong danh sách chưa
         for (int i = 0; i < itemCount; i++) {
-            LineItem existing = items[i];
-            if (existing != null && existing.getMenuItem() != null && item.getMenuItem() != null
-                    && existing.getMenuItem().getId().equals(item.getMenuItem().getId())) {
+            I existing = items[i];
+            if (existing != null && existing.getItem() != null && item.getItem() != null
+                    && existing.getItem().getId().equals(item.getItem().getId())) {
                 return existing.changeQuantity(existing.getQuantity() + item.getQuantity());
             }
         }
 
         // Tăng dung lượng mảng
-        LineItem[] newArray = new LineItem[itemCount + 1];
+        I[] newArray = (I[]) Array.newInstance(itemType, itemCount + 1);
         for (int i = 0; i < itemCount; i++) {
             newArray[i] = items[i];
         }
@@ -78,6 +93,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean removeItem(String itemId) {
         if (this.status != TransactionStatus.DRAFT || itemId == null || this.itemCount == 0) {
             return false;
@@ -85,8 +101,8 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
         int index = -1;
         for (int i = 0; i < itemCount; i++) {
-            LineItem lineItem = items[i];
-            if (lineItem != null && lineItem.getMenuItem() != null && itemId.equals(lineItem.getMenuItem().getId())) {
+            I lineItem = items[i];
+            if (lineItem != null && lineItem.getItem() != null && itemId.equals(lineItem.getItem().getId())) {
                 index = i;
                 break;
             }
@@ -94,7 +110,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
         if (index == -1) return false;
 
-        LineItem[] newArray = new LineItem[itemCount - 1];
+        I[] newArray = (I[]) Array.newInstance(itemType, itemCount - 1);
         int k = 0;
         for (int i = 0; i < itemCount; i++) {
             if (i != index) {
@@ -109,7 +125,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
     public double getTotal() {
         double total = 0.0;
         for (int i = 0; i < itemCount; i++) {
-            LineItem item = items[i];
+            I item = items[i];
             if (item != null) {
                 total += item.getSubTotal();
             }
@@ -117,22 +133,24 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         return total;
     }
 
-    public final boolean confirm() {
+    public boolean confirm() {
         if (this.status != TransactionStatus.DRAFT) {
             return false;
         }
-        onConfirm();
+        if (!onConfirm()) {
+            return false;
+        }
         this.status = TransactionStatus.CONFIRMED;
         return true;
     }
 
     public boolean cancel() {
-        if (this.status != TransactionStatus.DRAFT) {
+        if (this.status == TransactionStatus.COMPLETED || this.status == TransactionStatus.CANCELLED) {
             return false;
         }
         this.status = TransactionStatus.CANCELLED;
         return true;
     }
 
-    protected abstract void onConfirm();
+    protected abstract boolean onConfirm();
 }

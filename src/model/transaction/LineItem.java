@@ -3,18 +3,25 @@ package model.transaction;
 import model.menu.MenuItem;
 
 public abstract class LineItem {
-    private MenuItem menuItem;
+    private MenuItem item;
     private int quantity;
     private double unitAmount;
 
-    public LineItem(MenuItem menuItem, int quantity, double unitAmount) {
-        this.menuItem = menuItem;
+    public LineItem() {
+    }
+
+    public LineItem(MenuItem item, int quantity, double unitAmount) {
+        this.item = item;
         this.quantity = quantity;
         this.unitAmount = unitAmount;
     }
 
-    public MenuItem getMenuItem() {
-        return menuItem;
+    public MenuItem getItem() {
+        return item;
+    }
+
+    public void setItem(MenuItem item) {
+        this.item = item;
     }
 
     public int getQuantity() {
@@ -23,6 +30,10 @@ public abstract class LineItem {
 
     public double getUnitAmount() {
         return unitAmount;
+    }
+
+    public void setUnitAmount(double unitAmount) {
+        this.unitAmount = unitAmount;
     }
 
     public double getSubTotal() {

@@ -6,8 +6,12 @@ import model.supplier.Supplier;
 public class ImportOrder extends Transaction<ImportItem> {
     private Supplier suppliedBy;
 
+    public ImportOrder() {
+        super(ImportItem.class);
+    }
+
     public ImportOrder(String id, Employee handledBy, Supplier suppliedBy) {
-        super(id, handledBy);
+        super(id, handledBy, ImportItem.class);
         this.suppliedBy = suppliedBy;
     }
 
@@ -20,6 +24,7 @@ public class ImportOrder extends Transaction<ImportItem> {
     }
 
     @Override
-    protected void onConfirm() {
+    protected boolean onConfirm() {
+        return getItems().length > 0;
     }
 }

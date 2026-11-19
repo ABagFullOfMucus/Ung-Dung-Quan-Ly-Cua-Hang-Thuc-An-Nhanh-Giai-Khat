@@ -7,6 +7,10 @@ public abstract class MenuItem extends BaseEntity {
     private double price;
     private String description;
 
+    public MenuItem() {
+        super();
+    }
+
     public MenuItem(String id, String name, double price, String description) {
         super(id);
         this.name = name;
@@ -39,4 +43,6 @@ public abstract class MenuItem extends BaseEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    
 }

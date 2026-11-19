@@ -7,8 +7,12 @@ public class StockEntry extends BaseEntity {
     private MenuItem item;
     private int quantity;
 
-    public StockEntry(String id, MenuItem item, int quantity) {
-        super(id);
+    public StockEntry() {
+        super();
+    }
+
+    public StockEntry(MenuItem item, int quantity) {
+        super(item != null ? item.getId() : null);
         this.item = item;
         this.quantity = quantity;
     }
@@ -25,20 +29,17 @@ public class StockEntry extends BaseEntity {
         return quantity;
     }
 
-    public boolean increase(int n) {
-        if (n <= 0) {
-            return false;
+    public void increase(int amount) {
+        if (amount > 0) {
+            this.quantity += amount;
         }
-        this.quantity += n;
-        return true;
-
     }
 
-    public boolean decrease(int n) {
-        if (n <= 0 || n > this.quantity) {
+    public boolean decrease(int amount) {
+        if (amount <= 0 || amount > this.quantity) {
             return false;
         }
-        this.quantity -= n;
+        this.quantity -= amount;
         return true;
     }
 }

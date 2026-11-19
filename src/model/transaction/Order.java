@@ -9,8 +9,13 @@ public class Order extends Transaction<OrderItem> {
     private Customer placedBy;
     private DiscountPolicy discountPolicy;
 
+    public Order() {
+        super(OrderItem.class);
+        this.discountPolicy = new NoDiscount();
+    }
+
     public Order(String id, Employee handledBy, Customer placedBy) {
-        super(id, handledBy);
+        super(id, handledBy, OrderItem.class);
         this.placedBy = placedBy;
         this.discountPolicy = new NoDiscount();
     }
@@ -31,14 +36,6 @@ public class Order extends Transaction<OrderItem> {
         this.discountPolicy = discountPolicy;
     }
 
-    public boolean complete() {
-        if (getStatus() != TransactionStatus.CONFIRMED) {
-            return false;
-        }
-        setStatus(TransactionStatus.COMPLETED);
-        return true;
-    }
-
     public double getFinalTotal() {
         double total = getTotal();
         if (discountPolicy != null) {
@@ -47,7 +44,16 @@ public class Order extends Transaction<OrderItem> {
         return total;   
     }
 
+    public boolean complete() {
+        if (getStatus() != TransactionStatus.CONFIRMED) {
+            return false;
+        }
+        setStatus(TransactionStatus.COMPLETED);
+        return true;
+    }
+
     @Override
-    protected void onConfirm() {
+    protected boolean onConfirm() {
+        return true;
     }
 }
