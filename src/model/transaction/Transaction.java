@@ -1,5 +1,6 @@
 package model.transaction;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import model.base.BaseEntity;
 import model.employee.Employee;
@@ -10,23 +11,26 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
     private Employee handledBy;
     private I[] items;
     private int itemCount;
+    private final Class<I> itemType;
 
     @SuppressWarnings("unchecked")
-    public Transaction() {
+    public Transaction(Class<I> itemType) {
         super();
+        this.itemType = itemType;
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
-        this.items = (I[]) new LineItem[0];
+        this.items = (I[]) Array.newInstance(itemType, 0);
         this.itemCount = 0;
     }
 
     @SuppressWarnings("unchecked")
-    public Transaction(String id, Employee handledBy) {
+    public Transaction(String id, Employee handledBy, Class<I> itemType) {
         super(id);
+        this.itemType = itemType;
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
         this.handledBy = handledBy;
-        this.items = (I[]) new LineItem[0];
+        this.items = (I[]) Array.newInstance(itemType, 0);
         this.itemCount = 0;
     }
 
@@ -56,7 +60,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
     @SuppressWarnings("unchecked")
     public I[] getItems() {
-        I[] result = (I[]) new LineItem[itemCount];
+        I[] result = (I[]) Array.newInstance(itemType, itemCount);
         for (int i = 0; i < itemCount; i++) {
             result[i] = items[i];
         }
@@ -79,7 +83,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         }
 
         // Tăng dung lượng mảng
-        I[] newArray = (I[]) new LineItem[itemCount + 1];
+        I[] newArray = (I[]) Array.newInstance(itemType, itemCount + 1);
         for (int i = 0; i < itemCount; i++) {
             newArray[i] = items[i];
         }
@@ -106,7 +110,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
         if (index == -1) return false;
 
-        I[] newArray = (I[]) new LineItem[itemCount - 1];
+        I[] newArray = (I[]) Array.newInstance(itemType, itemCount - 1);
         int k = 0;
         for (int i = 0; i < itemCount; i++) {
             if (i != index) {

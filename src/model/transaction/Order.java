@@ -10,12 +10,12 @@ public class Order extends Transaction<OrderItem> {
     private DiscountPolicy discountPolicy;
 
     public Order() {
-        super();
+        super(OrderItem.class);
         this.discountPolicy = new NoDiscount();
     }
 
     public Order(String id, Employee handledBy, Customer placedBy) {
-        super(id, handledBy);
+        super(id, handledBy, OrderItem.class);
         this.placedBy = placedBy;
         this.discountPolicy = new NoDiscount();
     }
