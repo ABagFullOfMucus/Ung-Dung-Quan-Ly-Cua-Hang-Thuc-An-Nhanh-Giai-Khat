@@ -7,11 +7,11 @@ public class ImportOrder extends Transaction<ImportItem> {
     private Supplier suppliedBy;
 
     public ImportOrder() {
-        super();
+        super(ImportItem.class);
     }
 
     public ImportOrder(String id, Employee handledBy, Supplier suppliedBy) {
-        super(id, handledBy);
+        super(id, handledBy, ImportItem.class);
         this.suppliedBy = suppliedBy;
     }
 
@@ -25,6 +25,6 @@ public class ImportOrder extends Transaction<ImportItem> {
 
     @Override
     protected boolean onConfirm() {
-        return !getItems().isEmpty();
+        return getItems().length > 0;
     }
 }

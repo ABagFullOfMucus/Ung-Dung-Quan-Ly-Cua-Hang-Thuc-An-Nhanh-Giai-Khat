@@ -4,7 +4,7 @@ import model.customer.Customer;
 import persistence.converter.base.BaseTextConverter;
 
 public class CustomerConverter extends BaseTextConverter<Customer> {
-    private static final int FIELD_COUNT = 5;
+    private static final int FIELD_COUNT = 6;
 
     /**
      * (non-Javadoc)
@@ -24,7 +24,8 @@ public class CustomerConverter extends BaseTextConverter<Customer> {
                 entity.getName(),
                 entity.getPhoneNumber(),
                 entity.getAddress(),
-                entity.getLoyaltyPoints());
+                entity.getLoyaltyPoints(),
+                entity.isActive());
     }
 
     @Override
@@ -48,8 +49,20 @@ public class CustomerConverter extends BaseTextConverter<Customer> {
         } catch (NumberFormatException e) {
             return null;
         }
-        if (points < 0)
+        if (points < 0) {
             return null;
-        return new Customer(id, parts[1].trim(), parts[2].trim(), parts[3].trim(), points);
+        }
+
+        String activeStr = parts[5].trim();
+        if (!"true".equalsIgnoreCase(activeStr) && !"false".equalsIgnoreCase(activeStr)) {
+            return null;
+        }
+        boolean active = Boolean.parseBoolean(activeStr);
+
+        Customer customer = new Customer(id, parts[1].trim(), parts[2].trim(), parts[3].trim(), points);
+        if (!active) {
+            customer.deactivate();
+        }
+        return customer;
     }
 }

@@ -1,0 +1,4 @@
+﻿NCC001|Dang Quoc Huy|0981111111|Tan Binh, TP.HCM|Cong ty Thuc Pham Sai Gon|sales@saigonfood.vn|true
+NCC002|Bui Thanh Thao|0982222222|Quan 12, TP.HCM|Cong ty Nguyen Lieu Pha Che Viet|contact@phacheviet.vn|true
+NCC003|Ngo Tuan Kiet|0983333333|Binh Tan, TP.HCM|Nha Phan Phoi Do Dong Lanh Minh Phat|info@minhphatfrozen.vn|true
+NCC004|Ly Hong Nhung|0984444444|Quan 8, TP.HCM|Cong ty Bao Bi Xanh|support@baobixanh.vn|false

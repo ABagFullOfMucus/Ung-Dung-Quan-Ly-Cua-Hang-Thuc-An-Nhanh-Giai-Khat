@@ -1,8 +1,8 @@
 package model.customer;
 
-import interfaces.DiscountPolicy;
+import interfaces.IDiscountPolicy;
 
-public class MemberDiscount implements DiscountPolicy {
+public class MemberDiscount implements IDiscountPolicy {
     @Override
     public double apply(double subtotal, Customer customer) {
         if (customer == null || customer.getTier() == null) {

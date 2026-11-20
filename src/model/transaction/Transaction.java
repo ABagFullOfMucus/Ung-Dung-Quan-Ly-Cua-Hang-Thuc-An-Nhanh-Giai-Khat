@@ -1,9 +1,7 @@
 package model.transaction;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import model.base.BaseEntity;
 import model.employee.Employee;
 
@@ -11,22 +9,29 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
     private LocalDateTime time;
     private TransactionStatus status;
     private Employee handledBy;
-    private List<I> items;
+    private I[] items;
+    private int itemCount;
+    private final Class<I> itemType;
 
     @SuppressWarnings("unchecked")
-    public Transaction() {
+    public Transaction(Class<I> itemType) {
         super();
+        this.itemType = itemType;
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
-        this.items = Arrays.asList((I[]) new LineItem[0]);
+        this.items = (I[]) Array.newInstance(itemType, 0);
+        this.itemCount = 0;
     }
 
-    public Transaction(String id, Employee handledBy) {
+    @SuppressWarnings("unchecked")
+    public Transaction(String id, Employee handledBy, Class<I> itemType) {
         super(id);
+        this.itemType = itemType;
         this.time = LocalDateTime.now();
         this.status = TransactionStatus.DRAFT;
         this.handledBy = handledBy;
-        this.items = Arrays.asList((I[]) new LineItem[0]);
+        this.items = (I[]) Array.newInstance(itemType, 0);
+        this.itemCount = 0;
     }
 
     public LocalDateTime getTime() {
@@ -53,8 +58,13 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         this.handledBy = handledBy;
     }
 
-    public List<I> getItems() {
-        return Collections.unmodifiableList(items);
+    @SuppressWarnings("unchecked")
+    public I[] getItems() {
+        I[] result = (I[]) Array.newInstance(itemType, itemCount);
+        for (int i = 0; i < itemCount; i++) {
+            result[i] = items[i];
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -64,33 +74,34 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         }
 
         // Kiểm tra xem item đã tồn tại trong danh sách chưa
-        for (I existing : items) {
+        for (int i = 0; i < itemCount; i++) {
+            I existing = items[i];
             if (existing != null && existing.getItem() != null && item.getItem() != null
                     && existing.getItem().getId().equals(item.getItem().getId())) {
                 return existing.changeQuantity(existing.getQuantity() + item.getQuantity());
             }
         }
 
-        // Tăng dung lượng mảng và tạo List mới
-        int oldSize = this.items.size();
-        I[] newArray = (I[]) new LineItem[oldSize + 1];
-        for (int i = 0; i < oldSize; i++) {
-            newArray[i] = this.items.get(i);
+        // Tăng dung lượng mảng
+        I[] newArray = (I[]) Array.newInstance(itemType, itemCount + 1);
+        for (int i = 0; i < itemCount; i++) {
+            newArray[i] = items[i];
         }
-        newArray[oldSize] = item;
-        this.items = Arrays.asList(newArray);
+        newArray[itemCount] = item;
+        this.items = newArray;
+        this.itemCount++;
         return true;
     }
 
     @SuppressWarnings("unchecked")
     public boolean removeItem(String itemId) {
-        if (this.status != TransactionStatus.DRAFT || itemId == null || this.items.isEmpty()) {
+        if (this.status != TransactionStatus.DRAFT || itemId == null || this.itemCount == 0) {
             return false;
         }
 
         int index = -1;
-        for (int i = 0; i < items.size(); i++) {
-            I lineItem = items.get(i);
+        for (int i = 0; i < itemCount; i++) {
+            I lineItem = items[i];
             if (lineItem != null && lineItem.getItem() != null && itemId.equals(lineItem.getItem().getId())) {
                 index = i;
                 break;
@@ -99,20 +110,22 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
 
         if (index == -1) return false;
 
-        I[] newArray = (I[]) new LineItem[items.size() - 1];
+        I[] newArray = (I[]) Array.newInstance(itemType, itemCount - 1);
         int k = 0;
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = 0; i < itemCount; i++) {
             if (i != index) {
-                newArray[k++] = items.get(i);
+                newArray[k++] = items[i];
             }
         }
-        this.items = Arrays.asList(newArray);
+        this.items = newArray;
+        this.itemCount--;
         return true;
     }
 
     public double getTotal() {
         double total = 0.0;
-        for (I item : items) {
+        for (int i = 0; i < itemCount; i++) {
+            I item = items[i];
             if (item != null) {
                 total += item.getSubTotal();
             }

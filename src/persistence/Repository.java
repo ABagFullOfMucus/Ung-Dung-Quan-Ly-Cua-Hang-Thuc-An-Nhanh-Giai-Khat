@@ -1,7 +1,5 @@
 package persistence;
 
-import java.util.List;
-
 public interface Repository<T> {
 
     boolean add(T entity);
@@ -10,5 +8,5 @@ public interface Repository<T> {
 
     T findById(String id);
 
-    List<T> findAll();
+    T[] findAll();
 }

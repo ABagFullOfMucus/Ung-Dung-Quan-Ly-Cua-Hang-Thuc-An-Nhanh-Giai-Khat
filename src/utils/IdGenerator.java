@@ -1,9 +1,7 @@
 package utils;
 
-import java.util.List;
-
 public class IdGenerator {
-    public static String next(String prefix, List<String> existingIds) {
+    public static String next(String prefix, String[] existingIds) {
         int maxId = 0;
         for (String id : existingIds) {
             if (id.startsWith(prefix)) {
