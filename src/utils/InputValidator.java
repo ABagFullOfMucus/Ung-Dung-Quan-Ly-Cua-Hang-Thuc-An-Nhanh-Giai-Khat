@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class InputValidator {
 	private static final Scanner SC = new Scanner(System.in);
 
-	// Đọc số nguyên an toàn từ bàn phím
 	public static int getInt(String prompt) {
 		System.out.print(prompt);
 
@@ -20,7 +19,17 @@ public class InputValidator {
 		return value;
 	}
 
-	// Đọc số thực an toàn từ bàn phím
+	public static int getPositiveInt(String prompt) {
+		int value;
+		do {
+			value = getInt(prompt);
+			if (value <= 0) {
+				System.out.println("Giá trị phải lớn hơn 0!");
+			}
+		} while (value <= 0);
+		return value;
+	}
+
 	public static double getDouble(String prompt) {
 		System.out.print(prompt);
 
@@ -35,7 +44,22 @@ public class InputValidator {
 		return value;
 	}
 
-	// Đọc chuỗi không được để trống
+	public static double getPositiveDouble(String prompt) {
+		double value;
+		do {
+			value = getDouble(prompt);
+			if (value <= 0) {
+				System.out.println("Giá trị phải lớn hơn 0!");
+			}
+		} while (value <= 0);
+		return value;
+	}
+
+	public static String getString(String prompt) {
+		System.out.print(prompt);
+		return SC.nextLine().trim();
+	}
+
 	public static String getNonEmptyString(String prompt) {
 		String value;
 
@@ -51,11 +75,14 @@ public class InputValidator {
 		return value;
 	}
 
-	// Đọc true/false
 	public static boolean getBoolean(String prompt) {
 		System.out.print(prompt);
 		String input = SC.nextLine().trim().toLowerCase();
 
-		return input.equals("true") || input.equals("yes") || input.equals("y") || input.equals("co") || input.equals("có");
+		return input.equals("true")
+				|| input.equals("yes")
+				|| input.equals("y")
+				|| input.equals("co")
+				|| input.equals("có");
 	}
 }

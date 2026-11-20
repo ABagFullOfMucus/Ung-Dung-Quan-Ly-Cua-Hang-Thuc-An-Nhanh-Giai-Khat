@@ -4,19 +4,24 @@ import model.supplier.Supplier;
 import persistence.converter.base.BaseTextConverter;
 
 public class SupplierConverter extends BaseTextConverter<Supplier> {
-    
-    private static final int FIELD_COUNT = 6;
+    private static final int FIELD_COUNT = 7;
 
     /**
-     * id|name|phoneNumber|address|companyName|email
+     * id|name|phoneNumber|address|companyName|email|active
      */
-    
     @Override
     public String toLine(Supplier entity) {
         if (entity == null) {
             return "";
         }
-        return join(entity.getId(), entity.getName(), entity.getPhoneNumber(), entity.getAddress(), entity.getCompanyName(), entity.getEmail());
+        return join(
+                entity.getId(),
+                entity.getName(),
+                entity.getPhoneNumber(),
+                entity.getAddress(),
+                entity.getCompanyName(),
+                entity.getEmail(),
+                entity.isActive());
     }
 
     @Override
@@ -33,6 +38,23 @@ public class SupplierConverter extends BaseTextConverter<Supplier> {
         if (id.isEmpty()) {
             return null;
         }
-        return new Supplier(id, parts[1].trim(), parts[2].trim(), parts[3].trim(), parts[4].trim(), parts[5].trim());
+
+        String activeStr = parts[6].trim();
+        if (!"true".equalsIgnoreCase(activeStr) && !"false".equalsIgnoreCase(activeStr)) {
+            return null;
+        }
+        boolean active = Boolean.parseBoolean(activeStr);
+
+        Supplier supplier = new Supplier(
+                id,
+                parts[1].trim(),
+                parts[2].trim(),
+                parts[3].trim(),
+                parts[4].trim(),
+                parts[5].trim());
+        if (!active) {
+            supplier.deactivate();
+        }
+        return supplier;
     }
 }

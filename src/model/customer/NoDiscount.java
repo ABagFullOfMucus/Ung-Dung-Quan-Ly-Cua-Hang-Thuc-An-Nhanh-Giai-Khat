@@ -1,8 +1,8 @@
 package model.customer;
 
-import interfaces.DiscountPolicy;
+import interfaces.IDiscountPolicy;
 
-public class NoDiscount implements DiscountPolicy {
+public class NoDiscount implements IDiscountPolicy {
     @Override
     public double apply(double subtotal, Customer customer) {
         return subtotal;

@@ -1,0 +1,8 @@
+﻿MN001|Ca phe sua da|29000.0|Ca phe phin truyen thong pha sua dac|DRINK|M|true
+MN002|Tra sua tran chau duong den|45000.0|Tra den dai loan kem tran chau duong den|DRINK|L|true
+MN003|Tra dao cam sa|39000.0|Tra dao thanh mat voi cam tuoi va sa|DRINK|M|true
+MN004|Coca Cola tuoi|18000.0|Nuoc ngot co gas giai khat|DRINK|S|true
+MN005|Burger bo phomai|55000.0|Banh mi burger bo nuong kem phomai cheddar|FASTFOOD|540.0|true
+MN006|Ga ran gion cay (2 mieng)|68000.0|Ga tam bot chien gion vi cay nhe|FASTFOOD|680.0|true
+MN007|Khoai tay chien lon|32000.0|Khoai tay chien vang gion kem tuong ca|FASTFOOD|365.0|true
+MN008|Pizza mini hai san|79000.0|Pizza de gion nhan tom muc phomai|FASTFOOD|720.0|false

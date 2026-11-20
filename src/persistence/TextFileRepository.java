@@ -1,26 +1,36 @@
 package persistence;
 
-import java.io.IOException;
-
+import java.lang.reflect.Array;
 import model.base.BaseEntity;
 
 public class TextFileRepository<T extends BaseEntity> implements Repository<T> {
-    private String filePath;
+    private final String filePath;
+    private final TextConverter<T> converter;
+    private final Class<T> entityType;
     private T[] items;
     private int count;
-    private TextConverter<T> converter;
 
     @SuppressWarnings("unchecked")
-    public TextFileRepository(String filePath, TextConverter<T> converter) {
+    public TextFileRepository(String filePath, TextConverter<T> converter, Class<T> entityType) {
+        if (filePath == null || filePath.isBlank()) {
+            throw new IllegalArgumentException("filePath không được rỗng");
+        }
+        if (converter == null) {
+            throw new IllegalArgumentException("converter không được null");
+        }
+        if (entityType == null) {
+            throw new IllegalArgumentException("entityType không được null");
+        }
         this.filePath = filePath;
         this.converter = converter;
-        this.items = (T[]) new BaseEntity[10];
+        this.entityType = entityType;
+        this.items = (T[]) Array.newInstance(entityType, 10);
         this.count = 0;
     }
 
+    @SuppressWarnings("unchecked")
     private void resize() {
-        @SuppressWarnings("unchecked")
-        T[] newItems = (T[]) new BaseEntity[items.length * 2];
+        T[] newItems = (T[]) Array.newInstance(entityType, items.length * 2);
         for (int i = 0; i < count; i++) {
             newItems[i] = items[i];
         }
@@ -35,7 +45,7 @@ public class TextFileRepository<T extends BaseEntity> implements Repository<T> {
         return FileHandler.writeLines(filePath, lines);
     }
 
-    public void load() throws IOException {
+    public void load() {
         count = 0;
         String[] lines = FileHandler.readLines(filePath);
         for (String line : lines) {
@@ -55,7 +65,7 @@ public class TextFileRepository<T extends BaseEntity> implements Repository<T> {
 
     @Override
     public boolean add(T entity) {
-        if (entity == null || findById(entity.getId()) != null) {
+        if (entity == null || entity.getId() == null || findById(entity.getId()) != null) {
             return false;
         }
         if (count >= items.length) {
@@ -74,7 +84,7 @@ public class TextFileRepository<T extends BaseEntity> implements Repository<T> {
     @Override
     @SuppressWarnings("unchecked")
     public T[] findAll() {
-        T[] result = (T[]) new BaseEntity[count];
+        T[] result = (T[]) Array.newInstance(entityType, count);
         for (int i = 0; i < count; i++) {
             result[i] = items[i];
         }
@@ -83,8 +93,11 @@ public class TextFileRepository<T extends BaseEntity> implements Repository<T> {
 
     @Override
     public T findById(String id) {
+        if (id == null) {
+            return null;
+        }
         for (int i = 0; i < count; i++) {
-            if (items[i].getId().equals(id)) {
+            if (items[i] != null && id.equals(items[i].getId())) {
                 return items[i];
             }
         }
@@ -93,11 +106,11 @@ public class TextFileRepository<T extends BaseEntity> implements Repository<T> {
 
     @Override
     public boolean update(T entity) {
-        if (entity == null) {
+        if (entity == null || entity.getId() == null) {
             return false;
         }
         for (int i = 0; i < count; i++) {
-            if (items[i].getId().equals(entity.getId())) {
+            if (items[i] != null && entity.getId().equals(items[i].getId())) {
                 T old = items[i];
                 items[i] = entity;
                 if (!flush()) {
@@ -109,5 +122,4 @@ public class TextFileRepository<T extends BaseEntity> implements Repository<T> {
         }
         return false;
     }
-
 }

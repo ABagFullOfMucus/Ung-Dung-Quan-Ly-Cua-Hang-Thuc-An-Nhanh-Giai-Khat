@@ -1,0 +1,5 @@
+﻿KH001|Nguyen Van An|0911111111|Quan 1, TP.HCM|1250|true
+KH002|Tran Thi Bich|0912222222|Quan 3, TP.HCM|350|true
+KH003|Le Minh Khoa|0913333333|Quan 7, TP.HCM|80|true
+KH004|Pham Thanh Truc|0914444444|Thu Duc, TP.HCM|0|true
+KH005|Hoang Gia Bao|0915555555|Go Vap, TP.HCM|500|false
