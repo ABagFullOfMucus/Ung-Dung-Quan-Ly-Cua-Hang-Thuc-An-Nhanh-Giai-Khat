@@ -5,6 +5,7 @@ public class MenuItemFactory {
         if (type == null || fields == null || fields.length < 5) {
             return null;
         }
+<<<<<<< HEAD
         String id = fields[0];
         String name = fields[1];
         String description = fields[3];
@@ -37,6 +38,24 @@ public class MenuItemFactory {
             double calories = Double.parseDouble(extra.trim());
             return new FastFood(id, name, price, description, calories);
         }
+=======
+        try {
+            String id = fields[0];
+            String name = fields[1];
+            double price = Double.parseDouble(fields[2]);
+            String description = fields[3];
+
+            if ("DRINK".equalsIgnoreCase(type)) {
+                DrinkSize size = DrinkSize.valueOf(fields[4].toUpperCase());
+                return new Drink(id, name, price, description, size);
+            } else if ("FASTFOOD".equalsIgnoreCase(type)) {
+                double calories = Double.parseDouble(fields[4]);
+                return new FastFood(id, name, price, description, calories);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+>>>>>>> origin/main
         return null;
     }
 

@@ -16,21 +16,22 @@ import persistence.converter.base.BaseTextConverter;
 public class OrderConverter extends BaseTextConverter<Order> {
     private static final String MEMBER = "MEMBER";
     private static final String NONE = "NONE";
-    private static final int HEADER_COUNT = 7;
+    private static final int HEADER_COUNT = 8;
     private static final int ITEM_FIELD_COUNT = 3;
 
     private final Repository<MenuItem> menuRepository;
     private final Repository<Employee> employeeRepository;
     private final Repository<Customer> customerRepository;
 
-    public OrderConverter(Repository<MenuItem> menuRepository, Repository<Employee> employeeRepository, Repository<Customer> customerRepository) {
+    public OrderConverter(Repository<MenuItem> menuRepository, Repository<Employee> employeeRepository,
+            Repository<Customer> customerRepository) {
         this.menuRepository = menuRepository;
         this.employeeRepository = employeeRepository;
         this.customerRepository = customerRepository;
     }
 
     /**
-     * id|time|status|handledById|placedById|discountType|itemCount|menuItemId|quantity|unitAmount
+     * id|time|status|handledById|placedById|discountType|finalTotal|itemCount|menuItemId|quantity|unitAmount
      */
     @Override
     public String toLine(Order entity) {
@@ -53,7 +54,8 @@ public class OrderConverter extends BaseTextConverter<Order> {
             itemCount++;
         }
 
-        return join(entity.getId(), time, entity.getStatus(), employeeId, customerId, discountType, itemCount) + itemLines;
+        return join(entity.getId(), time, entity.getStatus(), employeeId, customerId, discountType,
+                entity.getFinalTotal(), itemCount) + itemLines;
     }
 
     @Override
@@ -77,20 +79,27 @@ public class OrderConverter extends BaseTextConverter<Order> {
             TransactionStatus status = TransactionStatus.valueOf(parts[2].trim().toUpperCase());
 
             String employeeId = parts[3].trim();
-            Employee handledBy = employeeId.isEmpty() || employeeRepository == null ? null : employeeRepository.findById(employeeId);
+            Employee handledBy = employeeId.isEmpty() || employeeRepository == null ? null
+                    : employeeRepository.findById(employeeId);
             if (handledBy == null) {
                 return null;
             }
 
             String customerId = parts[4].trim();
-            Customer placedBy = customerId.isEmpty() || customerRepository == null ? null : customerRepository.findById(customerId);
+            Customer placedBy = customerId.isEmpty() || customerRepository == null ? null
+                    : customerRepository.findById(customerId);
 
             String discountType = parts[5].trim();
+            double savedFinalTotal = Double.parseDouble(parts[6].trim());
+            if (!Double.isFinite(savedFinalTotal) || savedFinalTotal < 0) {
+                return null;
+            }
+
             Order order = new Order(id, handledBy, placedBy);
             order.setTime(time);
             order.setDiscountPolicy(MEMBER.equalsIgnoreCase(discountType) ? new MemberDiscount() : new NoDiscount());
 
-            int itemCount = Integer.parseInt(parts[6].trim());
+            int itemCount = Integer.parseInt(parts[7].trim());
             if (itemCount < 0 || parts.length != HEADER_COUNT + itemCount * ITEM_FIELD_COUNT) {
                 return null;
             }
@@ -111,6 +120,9 @@ public class OrderConverter extends BaseTextConverter<Order> {
             }
 
             order.setStatus(status);
+            if (status == TransactionStatus.COMPLETED) {
+                order.setFinalTotal(savedFinalTotal);
+            }
             return order;
         } catch (Exception e) {
             return null;

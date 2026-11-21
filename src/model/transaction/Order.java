@@ -1,13 +1,14 @@
 package model.transaction;
 
-import interfaces.DiscountPolicy;
+import interfaces.IDiscountPolicy;
 import model.customer.Customer;
 import model.customer.NoDiscount;
 import model.employee.Employee;
 
 public class Order extends Transaction<OrderItem> {
     private Customer placedBy;
-    private DiscountPolicy discountPolicy;
+    private IDiscountPolicy discountPolicy;
+    private double finalTotal = -1;
 
     public Order() {
         super(OrderItem.class);
@@ -28,26 +29,38 @@ public class Order extends Transaction<OrderItem> {
         this.placedBy = placedBy;
     }
 
-    public DiscountPolicy getDiscountPolicy() {
+    public IDiscountPolicy getDiscountPolicy() {
         return discountPolicy;
     }
 
-    public void setDiscountPolicy(DiscountPolicy discountPolicy) {
+    public void setDiscountPolicy(IDiscountPolicy discountPolicy) {
         this.discountPolicy = discountPolicy;
     }
 
     public double getFinalTotal() {
+        if (getStatus() == TransactionStatus.COMPLETED && this.finalTotal >= 0) {
+            return this.finalTotal;
+        }
+        return calculateDiscountedTotal();
+    }
+
+    public void setFinalTotal(double finalTotal) {
+        this.finalTotal = finalTotal;
+    }
+
+    private double calculateDiscountedTotal() {
         double total = getTotal();
         if (discountPolicy != null) {
             return discountPolicy.apply(total, this.placedBy);
         }
-        return total;   
+        return total;
     }
 
     public boolean complete() {
         if (getStatus() != TransactionStatus.CONFIRMED) {
             return false;
         }
+        this.finalTotal = calculateDiscountedTotal();
         setStatus(TransactionStatus.COMPLETED);
         return true;
     }
