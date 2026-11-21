@@ -7,9 +7,6 @@ public abstract class LineItem {
     private int quantity;
     private double unitAmount;
 
-    public LineItem() {
-    }
-
     public LineItem(MenuItem item, int quantity, double unitAmount) {
         this.item = item;
         this.quantity = quantity;

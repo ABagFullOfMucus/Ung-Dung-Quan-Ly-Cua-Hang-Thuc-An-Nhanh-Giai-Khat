@@ -3,10 +3,6 @@ package model.menu;
 public class Drink extends MenuItem {
     private DrinkSize size;
 
-    public Drink() {
-        super();
-    }
-
     public Drink(String id, String name, double price, String description, DrinkSize size) {
         super(id, name, price, description);
         this.size = size;

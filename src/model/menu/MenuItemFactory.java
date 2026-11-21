@@ -5,21 +5,50 @@ public class MenuItemFactory {
         if (type == null || fields == null || fields.length < 5) {
             return null;
         }
-        try {
-            String id = fields[0];
-            String name = fields[1];
-            double price = Double.parseDouble(fields[2]);
-            String description = fields[3];
+        String id = fields[0];
+        String name = fields[1];
+        String description = fields[3];
+        String extra = fields[4];
 
-            if ("DRINK".equalsIgnoreCase(type)) {
-                DrinkSize size = DrinkSize.valueOf(fields[4].toUpperCase());
-                return new Drink(id, name, price, description, size);
-            } else if ("FASTFOOD".equalsIgnoreCase(type)) {
-                double calories = Double.parseDouble(fields[4]);
-                return new FastFood(id, name, price, description, calories);
-            }
-        } catch (Exception e) {
+        if (id == null || id.trim().isEmpty() || name == null || name.trim().isEmpty()) {
             return null;
+        }
+
+        if (!isNumber(fields[2]) || extra == null) {
+            return null;
+        }
+        double price = Double.parseDouble(fields[2].trim());
+        if (price < 0) {
+            return null;
+        }
+
+        if (type.equalsIgnoreCase("DRINK")) {
+            DrinkSize size = findSize(extra);
+            if (size == null) {
+                return null;
+            }
+            return new Drink(id, name, price, description, size);
+        }
+
+        if (type.equalsIgnoreCase("FASTFOOD")) {
+            if (!isNumber(extra)) {
+                return null;
+            }
+            double calories = Double.parseDouble(extra.trim());
+            return new FastFood(id, name, price, description, calories);
+        }
+        return null;
+    }
+
+    private static boolean isNumber(String s) {
+        return s != null && s.trim().matches("\\d+(\\.\\d+)?");
+    }
+
+    private static DrinkSize findSize(String s) {
+        for (DrinkSize size : DrinkSize.values()) {
+            if (size.name().equalsIgnoreCase(s.trim())) {
+                return size;
+            }
         }
         return null;
     }

@@ -133,13 +133,11 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         return total;
     }
 
-    public boolean confirm() {
+    public final boolean confirm() {
         if (this.status != TransactionStatus.DRAFT) {
             return false;
         }
-        if (!onConfirm()) {
-            return false;
-        }
+        onConfirm();
         this.status = TransactionStatus.CONFIRMED;
         return true;
     }
@@ -152,5 +150,5 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         return true;
     }
 
-    protected abstract boolean onConfirm();
+    protected abstract void onConfirm();
 }
