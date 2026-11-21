@@ -133,7 +133,7 @@ public abstract class Transaction<I extends LineItem> extends BaseEntity {
         return total;
     }
 
-    public final boolean confirm() {
+    public boolean confirm() {
         if (this.status != TransactionStatus.DRAFT) {
             return false;
         }
