@@ -86,7 +86,7 @@ public class Main {
         IImportService importService = new ImportServiceImpl(
                 importOrderRepo, supplierService, menuService, inventoryService);
         IReportService reportService = new ReportServiceImpl(
-                orderService, menuService, inventoryService);
+                orderService, menuService, inventoryService, employeeService); // Thêm employeeService 
 
         // 4. Tạo ADMIN mặc định khi chưa có nhân viên
         bootstrapDefaultAdmin(employeeService);
