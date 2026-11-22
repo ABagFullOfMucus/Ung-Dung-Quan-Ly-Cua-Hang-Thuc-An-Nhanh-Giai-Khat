@@ -421,21 +421,36 @@ public class ConsoleApp {
                     }
                     break;
                 case 2: {
-                    System.out.println("Loại món: 1. Đồ uống (Drink) | 2. Đồ ăn nhanh (FastFood)");
-                    int type = InputValidator.getInt("Chọn: ");
+                    int type = -1;
+                    while (true) {
+                        System.out.println("Loại món: 1. Đồ uống (Drink) | 2. Đồ ăn nhanh (FastFood) | 0. Quay lại");
+                        type = InputValidator.getInt("Chọn: ");
+                        if (type == 0) {
+                            break;
+                        }
+                        if (type == 1 || type == 2) {
+                            break;
+                        }
+                        System.out.println("Lựa chọn không hợp lệ, vui lòng chọn 1, 2 hoặc 0.");
+                    }
+                    if (type == 0) {
+                        break;
+                    }
+
                     String name = InputValidator.getNonEmptyString("Tên món: ");
                     double price = InputValidator.getDouble("Giá bán: ");
                     String desc = InputValidator.getString("Mô tả: ");
                     MenuItem item;
                     if (type == 1) {
                         DrinkSize size = readDrinkSize();
+                        if (size == null) {
+                            System.out.println("Đã hủy thêm món.");
+                            break;
+                        }
                         item = new Drink(null, name, price, desc, size);
-                    } else if (type == 2) {
+                    } else {
                         double cal = InputValidator.getDouble("Calories: ");
                         item = new FastFood(null, name, price, desc, cal);
-                    } else {
-                        System.out.println("Loại món không hợp lệ.");
-                        break;
                     }
                     printResult(menuService.add(item), "Đã thêm món mới");
                     break;
@@ -846,9 +861,11 @@ public class ConsoleApp {
 
     private Role readRole() {
         while (true) {
-            System.out.println("Chọn vai trò: 1. ADMIN | 2. MANAGER | 3. CASHIER | 4. WAITER");
+            System.out.println("Chọn vai trò: 1. ADMIN | 2. MANAGER | 3. CASHIER | 4. WAITER | 0. Hủy ");
             int choice = InputValidator.getInt("Chọn: ");
             switch (choice) {
+                case 0:
+                    return null;
                 case 1:
                     return Role.ADMIN;
                 case 2:
@@ -866,9 +883,11 @@ public class ConsoleApp {
 
     private DrinkSize readDrinkSize() {
         while (true) {
-            System.out.println("Chọn kích cỡ: 1. S | 2. M | 3. L");
+            System.out.println("Chọn kích cỡ: 1. S | 2. M | 3. L | 0.Hủy");
             int choice = InputValidator.getInt("Chọn: ");
             switch (choice) {
+                case 0:
+                    return null;
                 case 1:
                     return DrinkSize.S;
                 case 2:

@@ -9,6 +9,10 @@ public class InputValidator {
 		System.out.print(prompt);
 
 		while (!SC.hasNextInt()) {
+			if (!SC.hasNext()) {
+				System.out.println("Luồng nhập liệu kết thúc.");
+				System.exit(0);
+			}
 			System.out.println("Vui lòng nhập một số nguyên hợp lệ!");
 			SC.next();
 			System.out.print(prompt);

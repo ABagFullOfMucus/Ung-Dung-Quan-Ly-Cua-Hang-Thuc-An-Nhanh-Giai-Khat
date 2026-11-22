@@ -6,12 +6,3 @@ MN005|Burger bo phomai|55000.0|Banh mi burger bo nuong kem phomai cheddar|FASTFO
 MN006|Ga ran gion cay (2 mieng)|68000.0|Ga tam bot chien gion vi cay nhe|FASTFOOD|680.0|true
 MN007|Khoai tay chien lon|32000.0|Khoai tay chien vang gion kem tuong ca|FASTFOOD|365.0|true
 MN008|Pizza mini hai san|79000.0|Pizza de gion nhan tom muc phomai|FASTFOOD|720.0|false
-MN009|Tra sua tran chau hoang kim nuong|58000.0|Tra sua truyen thong vi nuong dam da topping tran chau|DRINK|L|true
-MN010|Banh burger tom dac biet phomai tan chay|65000.0|Burger tom bien tuoi sot mayonnaise cay va phomai mozzarella|FASTFOOD|620.0|true
-MN011|Nuoc suoi tinh khiet Aquafina|10000.0|Nuoc uong dong chai 500ml thanh khiet|DRINK|S|true
-MN012|Canh ga chien nuoc mam chua ngot sieu cay|75000.0|4 mieng canh ga chien mam thom cay nong|FASTFOOD|780.0|true
-MN013|Combo Giai Nhiet Mua He (Tra dao + Khoai tay)|65000.0|Combo tiet kiem 1 tra dao cam sa size M va 1 khoai tay|DRINK|M|true
-MN014|Tra xanh matcha Latte Nhat Ban|52000.0|Bot tra xanh Uji nguyen chat pha sua tuoi khong duong|DRINK|M|false
-MN015|Banh mi kep thit nguoi pate cotlet|35000.0|Banh mi gion kep thit cha pate|FASTFOOD|480.0|true
-MN016|Tra Tac Khong Lo|25000.0|Tra tac tuoi size L|DRINK|L|true
-MN017|Xuc Xich Duc|35000.0|Xuc xich nuong|FASTFOOD|350.0|true

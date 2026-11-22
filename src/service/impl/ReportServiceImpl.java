@@ -43,6 +43,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public double revenueBetween(LocalDate from, LocalDate to) {
         if (from == null || to == null || from.isAfter(to)) {
+            System.out.println("Lỗi: 'Từ ngày' không được lớn hơn 'Đến ngày'!");
             return 0.0;
         }
         Order[] orders = orderService.getAll();
@@ -306,7 +307,7 @@ public class ReportServiceImpl implements IReportService {
         double bestValue = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < orders.length; i++) {
             Order order = orders[i];
-            if (order == null || order.getStatus() == TransactionStatus.CANCELLED) {
+            if (order == null || order.getStatus() != TransactionStatus.CANCELLED) {
                 continue;
             }
 
