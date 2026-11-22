@@ -12,17 +12,6 @@ import service.interfaces.IOrderService;
 import service.interfaces.IReportService;
 import utils.ArrayUtils;
 
-/**
- * Dịch vụ báo cáo doanh thu và cảnh báo tồn kho.
- *
- * <p>
- * Lưu ý (D3): {@link Order#getFinalTotal()} hiện tính chiết khấu động theo hạng
- * {@code MemberTier} hiện tại của khách hàng. Khi khách lên hạng sau khi mua,
- * doanh thu các đơn cũ có thể lệch theo hạng mới. Để cố định số liệu lịch sử ở
- * phiên bản sau, nên lưu chốt {@code finalTotal} vào {@link Order} lúc hoàn tất
- * đơn.
- * </p>
- */
 public class ReportServiceImpl implements IReportService {
     private final IOrderService orderService;
     private final IMenuService menuService;
@@ -54,6 +43,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public double revenueBetween(LocalDate from, LocalDate to) {
         if (from == null || to == null || from.isAfter(to)) {
+            System.out.println("Lỗi: 'Từ ngày' không được lớn hơn 'Đến ngày'!");
             return 0.0;
         }
         Order[] orders = orderService.getAll();
@@ -317,7 +307,7 @@ public class ReportServiceImpl implements IReportService {
         double bestValue = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < orders.length; i++) {
             Order order = orders[i];
-            if (order == null) {
+            if (order == null || order.getStatus() != TransactionStatus.CANCELLED) {
                 continue;
             }
 
@@ -370,7 +360,6 @@ public class ReportServiceImpl implements IReportService {
         return count;
     }
 
-    
     private double getOrderValue(Order order) {
         if (order.getStatus() == TransactionStatus.COMPLETED) {
             return order.getFinalTotal();
