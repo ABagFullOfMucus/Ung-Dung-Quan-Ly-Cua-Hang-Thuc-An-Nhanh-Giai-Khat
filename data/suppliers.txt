@@ -2,3 +2,7 @@
 NCC002|Bui Thanh Thao|0982222222|Quan 12, TP.HCM|Cong ty Nguyen Lieu Pha Che Viet|contact@phacheviet.vn|true
 NCC003|Ngo Tuan Kiet|0983333333|Binh Tan, TP.HCM|Nha Phan Phoi Do Dong Lanh Minh Phat|info@minhphatfrozen.vn|true
 NCC004|Ly Hong Nhung|0984444444|Quan 8, TP.HCM|Cong ty Bao Bi Xanh|support@baobixanh.vn|false
+NCC005|Pham Nhat Vuong|0985555555|Long Bien, Ha Noi|Tap doan Vingroup - Nong san sach VinEco|vineco.support@vingroup.net|true
+NCC006|Nguyen Dang Quang|0986666666|Quan 1, TP.HCM|Cong ty Co phan Hang tieu dung Masan Consumer|contact@masan.vn|true
+NCC007|Tran Dinh Long|0987777777|Hai Ba Trung, Ha Noi|Cong ty Thiet bi Dien lanh Hoa Phat|support@hoaphat.com.vn|false
+NCC008|Nguyen Van A|0966666666|District 5|Saigon Supply|contact@saigon.vn|true

@@ -306,7 +306,7 @@ public class ReportServiceImpl implements IReportService {
         double bestValue = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < orders.length; i++) {
             Order order = orders[i];
-            if (order == null) {
+            if (order == null || order.getStatus() == TransactionStatus.CANCELLED) {
                 continue;
             }
 
@@ -359,7 +359,6 @@ public class ReportServiceImpl implements IReportService {
         return count;
     }
 
-    
     private double getOrderValue(Order order) {
         if (order.getStatus() == TransactionStatus.COMPLETED) {
             return order.getFinalTotal();

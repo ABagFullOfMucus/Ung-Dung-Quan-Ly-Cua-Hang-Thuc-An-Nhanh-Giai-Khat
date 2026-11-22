@@ -17,6 +17,9 @@ public abstract class BaseTextConverter<T> implements TextConverter<T> {
     }
 
     protected String[] split(String line) {
+        if (line != null && line.startsWith("\uFEFF")) {
+            line = line.substring(1);
+        }
         String[] parts = line.split("\\|", -1); // -1 là tránh việc phần tử cuối là "" dẫn đến split làm mất số lượng
                                                 // phần tử ban đầu.
         for (int i = 0; i < parts.length; i++) {

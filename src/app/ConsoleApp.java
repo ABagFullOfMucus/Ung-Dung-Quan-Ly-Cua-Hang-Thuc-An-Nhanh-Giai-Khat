@@ -77,6 +77,7 @@ public class ConsoleApp {
                     System.out.println("Tạm biệt!");
                     return;
                 }
+                continue;
             }
             showMainMenu();
         }
@@ -744,10 +745,13 @@ public class ConsoleApp {
             return;
         }
 
-        System.out.printf("Món giá cao nhất: %s | %s | %,.0f VND%n", highest.getId(), highest.getName(), highest.getPrice());
-        System.out.printf("Món giá thấp nhất: %s | %s | %,.0f VND%n", lowest.getId(), lowest.getName(), lowest.getPrice());
+        System.out.printf("Món giá cao nhất: %s | %s | %,.0f VND%n", highest.getId(), highest.getName(),
+                highest.getPrice());
+        System.out.printf("Món giá thấp nhất: %s | %s | %,.0f VND%n", lowest.getId(), lowest.getName(),
+                lowest.getPrice());
         System.out.printf("Giá trung bình món đang bán: %,.0f VND%n", avgPrice);
-        System.out.printf("Số món đang bán: %d (Đồ uống: %d, Đồ ăn nhanh: %d)%n", activeItems.length, drinkCount, foodCount);
+        System.out.printf("Số món đang bán: %d (Đồ uống: %d, Đồ ăn nhanh: %d)%n", activeItems.length, drinkCount,
+                foodCount);
     }
 
     private void reportEmployeeStatistics() {
@@ -763,8 +767,10 @@ public class ConsoleApp {
             return;
         }
 
-        System.out.printf("Nhân viên lương cao nhất: %s | %s | %s | %,.0f VND%n", highest.getId(), highest.getName(), highest.getRole(), highest.calculatePay());
-        System.out.printf("Nhân viên lương thấp nhất: %s | %s | %s | %,.0f VND%n", lowest.getId(), lowest.getName(), lowest.getRole(), lowest.calculatePay());
+        System.out.printf("Nhân viên lương cao nhất: %s | %s | %s | %,.0f VND%n", highest.getId(), highest.getName(),
+                highest.getRole(), highest.calculatePay());
+        System.out.printf("Nhân viên lương thấp nhất: %s | %s | %s | %,.0f VND%n", lowest.getId(), lowest.getName(),
+                lowest.getRole(), lowest.calculatePay());
         System.out.printf("Thu nhập trung bình của nhân viên: %,.0f VND%n", avgPay);
         System.out.printf("Tổng quỹ lương của (%d nhân viên đang hoạt động): %,.0f VND%n", activeCount, totalPayroll);
     }
@@ -783,8 +789,10 @@ public class ConsoleApp {
 
         int highestQty = inventoryService.getQuantity(highest.getId());
         int lowestQty = inventoryService.getQuantity(lowest.getId());
-        System.out.printf("Món tồn kho cao nhất: %s | %s | Tồn kho: %d%n", highest.getId(), highest.getName(), highestQty);
-        System.out.printf("Món tồn kho thấp nhất: %s | %s | Tồn kho: %d%n", lowest.getId(), lowest.getName(), lowestQty);
+        System.out.printf("Món tồn kho cao nhất: %s | %s | Tồn kho: %d%n", highest.getId(), highest.getName(),
+                highestQty);
+        System.out.printf("Món tồn kho thấp nhất: %s | %s | Tồn kho: %d%n", lowest.getId(), lowest.getName(),
+                lowestQty);
         System.out.printf("Tổng số lượng tồn kho: %d%n", totalQty);
         System.out.printf("Giá trị tồn kho ước tính (theo giá bán): %,.0f VND%n", estimatedValue);
     }
@@ -805,7 +813,8 @@ public class ConsoleApp {
                     ? highest.getFinalTotal()
                     : highest.getTotal();
             String customerName = highest.getPlacedBy() == null ? "Khách vãng lai" : highest.getPlacedBy().getName();
-            System.out.printf("Đơn giá trị cao nhất: %s | %s | Khách hàng: %s | Giá trị: %,.0f VND%n", highest.getId(), highest.getStatus(), customerName, value);
+            System.out.printf("Đơn giá trị cao nhất: %s | %s | Khách hàng: %s | Giá trị: %,.0f VND%n", highest.getId(),
+                    highest.getStatus(), customerName, value);
         }
 
         System.out.printf("Giá trị trung bình đơn hoàn tất: %,.0f VND%n", avgCompleted);
