@@ -14,14 +14,7 @@ import utils.ArrayUtils;
 import utils.IdGenerator;
 import utils.Validator;
 
-/**
- * Triển khai dịch vụ quản lý tồn kho.
- *
- * <p>
- * Lưu ý (D1): tham số {@code by} dùng để kiểm tra phân quyền thao tác kho;
- * {@link StockLog} hiện chưa có trường lưu mã người thực hiện.
- * </p>
- */
+
 public class InventoryServiceImpl implements IInventoryService {
     private final Repository<StockEntry> stockRepository;
     private final Repository<StockLog> logRepository;
