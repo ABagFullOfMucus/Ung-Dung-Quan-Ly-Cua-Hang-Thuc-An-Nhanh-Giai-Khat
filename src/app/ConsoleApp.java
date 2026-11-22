@@ -20,6 +20,7 @@ import model.transaction.ImportItem;
 import model.transaction.ImportOrder;
 import model.transaction.Order;
 import model.transaction.OrderItem;
+import model.transaction.TransactionStatus;
 import service.interfaces.IAuthService;
 import service.interfaces.ICustomerService;
 import service.interfaces.IEmployeeService;
@@ -672,6 +673,10 @@ public class ConsoleApp {
             System.out.println("\n--- BÁO CÁO & THỐNG KÊ ---");
             System.out.println("1. Doanh thu theo khoảng ngày");
             System.out.println("2. Danh sách món sắp hết hàng");
+            System.out.println("3. Thống kê thực đơn");
+            System.out.println("4. Thống kê nhân viên");
+            System.out.println("5. Thống kê tồn kho");
+            System.out.println("6. Thống kê đơn hàng");
             System.out.println("0. Quay lại");
             int choice = InputValidator.getInt("Chọn: ");
             switch (choice) {
@@ -696,6 +701,18 @@ public class ConsoleApp {
                     }
                     break;
                 }
+                case 3:
+                    reportMenuStatistics();
+                    break;
+                case 4:
+                    reportEmployeeStatistics();
+                    break;
+                case 5:
+                    reportStockStatistics();
+                    break;
+                case 6:
+                    reportOrderStatistics();
+                    break;
                 case 0:
                     return;
                 default:
@@ -703,6 +720,97 @@ public class ConsoleApp {
                     break;
             }
         }
+    }
+
+    private void reportMenuStatistics() {
+        System.out.println("\n-- Thống kê thực đơn --");
+        MenuItem highest = reportService.highestPricedMenuItem();
+        MenuItem lowest = reportService.lowestPricedMenuItem();
+        double avgPrice = reportService.averageActiveMenuPrice();
+        MenuItem[] activeItems = menuService.getActive();
+        int drinkCount = 0;
+        int foodCount = 0;
+        for (int i = 0; i < activeItems.length; i++) {
+            MenuItem item = activeItems[i];
+            if (item instanceof Drink) {
+                drinkCount++;
+            } else if (item instanceof FastFood) {
+                foodCount++;
+            }
+        }
+
+        if (highest == null || lowest == null) {
+            System.out.println("Chưa có món đang bán.");
+            return;
+        }
+
+        System.out.printf("Món giá cao nhất: %s | %s | %,.0f VND%n", highest.getId(), highest.getName(), highest.getPrice());
+        System.out.printf("Món giá thấp nhất: %s | %s | %,.0f VND%n", lowest.getId(), lowest.getName(), lowest.getPrice());
+        System.out.printf("Giá trung bình món đang bán: %,.0f VND%n", avgPrice);
+        System.out.printf("Số món đang bán: %d (Đồ uống: %d, Đồ ăn nhanh: %d)%n", activeItems.length, drinkCount, foodCount);
+    }
+
+    private void reportEmployeeStatistics() {
+        System.out.println("\n-- Thống kê nhân viên --");
+        Employee highest = reportService.highestPaidActiveEmployee();
+        Employee lowest = reportService.lowestPaidActiveEmployee();
+        double avgPay = reportService.averageActiveEmployeePay();
+        double totalPayroll = reportService.totalActivePayroll();
+        int activeCount = employeeService.getActive().length;
+
+        if (highest == null || lowest == null) {
+            System.out.println("Chưa có nhân viên đang hoạt động.");
+            return;
+        }
+
+        System.out.printf("Nhân viên lương cao nhất: %s | %s | %s | %,.0f VND%n", highest.getId(), highest.getName(), highest.getRole(), highest.calculatePay());
+        System.out.printf("Nhân viên lương thấp nhất: %s | %s | %s | %,.0f VND%n", lowest.getId(), lowest.getName(), lowest.getRole(), lowest.calculatePay());
+        System.out.printf("Thu nhập trung bình của nhân viên: %,.0f VND%n", avgPay);
+        System.out.printf("Tổng quỹ lương của (%d nhân viên đang hoạt động): %,.0f VND%n", activeCount, totalPayroll);
+    }
+
+    private void reportStockStatistics() {
+        System.out.println("\n-- Thống kê tồn kho --");
+        MenuItem highest = reportService.highestStockMenuItem();
+        MenuItem lowest = reportService.lowestStockMenuItem();
+        int totalQty = reportService.totalStockQuantity();
+        double estimatedValue = reportService.estimatedStockValue();
+
+        if (highest == null || lowest == null) {
+            System.out.println("Chưa có món đang bán.");
+            return;
+        }
+
+        int highestQty = inventoryService.getQuantity(highest.getId());
+        int lowestQty = inventoryService.getQuantity(lowest.getId());
+        System.out.printf("Món tồn kho cao nhất: %s | %s | Tồn kho: %d%n", highest.getId(), highest.getName(), highestQty);
+        System.out.printf("Món tồn kho thấp nhất: %s | %s | Tồn kho: %d%n", lowest.getId(), lowest.getName(), lowestQty);
+        System.out.printf("Tổng số lượng tồn kho: %d%n", totalQty);
+        System.out.printf("Giá trị tồn kho ước tính (theo giá bán): %,.0f VND%n", estimatedValue);
+    }
+
+    private void reportOrderStatistics() {
+        System.out.println("\n-- Thống kê đơn hàng --");
+        Order highest = reportService.highestValueOrder();
+        double avgCompleted = reportService.averageCompletedOrderValue();
+        int draft = reportService.countOrdersByStatus(TransactionStatus.DRAFT);
+        int confirmed = reportService.countOrdersByStatus(TransactionStatus.CONFIRMED);
+        int completed = reportService.countOrdersByStatus(TransactionStatus.COMPLETED);
+        int cancelled = reportService.countOrdersByStatus(TransactionStatus.CANCELLED);
+
+        if (highest == null) {
+            System.out.println("Chưa có đơn hàng.");
+        } else {
+            double value = highest.getStatus() == TransactionStatus.COMPLETED
+                    ? highest.getFinalTotal()
+                    : highest.getTotal();
+            String customerName = highest.getPlacedBy() == null ? "Khách vãng lai" : highest.getPlacedBy().getName();
+            System.out.printf("Đơn giá trị cao nhất: %s | %s | Khách hàng: %s | Giá trị: %,.0f VND%n", highest.getId(), highest.getStatus(), customerName, value);
+        }
+
+        System.out.printf("Giá trị trung bình đơn hoàn tất: %,.0f VND%n", avgCompleted);
+        System.out.printf("Số đơn theo trạng thái - DRAFT: %d, CONFIRMED: %d, COMPLETED: %d, CANCELLED: %d%n",
+                draft, confirmed, completed, cancelled);
     }
 
     private void handleChangeOwnPassword() {
